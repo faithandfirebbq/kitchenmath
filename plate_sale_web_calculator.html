@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plate Sale Portion & Purchase Calculator</title>
+  <style>
+    :root{
+      --bg:#fffef9;
+      --ink:#111;
+      --muted:#6b7280;
+      --accent:#ffcc00;
+      --accent2:#ff6b00;
+      --line:#111;
+      --ok:#0ea5e9;
+      --warn:#ef4444;
+      --radius:14px;
+    }
+    html, body { height:100%; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background:var(--bg); color:var(--ink); line-height:1.35;
+    }
+    .wrap{ max-width:1200px; margin: 24px auto 80px; padding: 0 16px; }
+    h1,h2,h3{ margin:0 0 8px 0; }
+    h1{ font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); }
+    h2{ font-size: clamp(1.1rem, 1rem + .8vw, 1.4rem); margin-top:24px; }
+    p{ margin:.25rem 0 .75rem; color:var(--muted); }
+
+    /* Neobrutalism-ish cards */
+    .card{ background:#fff; border:3px solid var(--line); border-radius: var(--radius); padding:16px; box-shadow: 6px 6px 0 #00000015; }
+    .grid{ display:grid; gap:16px; }
+    .addfab{ font-size:1.6rem; width:52px; height:48px; line-height:1; display:inline-flex; align-items:center; justify-content:center; }
+    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow: 6px 6px 0 #00000015; position:relative; }
+    .card-row h4{ margin:0 0 6px; font-size:1rem; padding-right:70px; }
+    .card-actions{ position:absolute; top:10px; right:10px; display:flex; gap:6px; }
+    .icon-btn{ width:28px; height:28px; border:2px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-weight:800; }
+    .icon-btn.danger{ color:var(--warn); border-color:var(--warn); }
+
+    /* Modal system */
+    .backdrop{ position:fixed; inset:0; background:#00000055; display:none; align-items:center; justify-content:center; padding:20px; z-index:1000; }
+    .backdrop[data-open="true"]{ display:flex; }
+    .modal{ background:#fff; border:3px solid var(--line); border-radius:16px; box-shadow:12px 12px 0 #00000025; width:min(720px, 96vw); max-height:86vh; display:flex; flex-direction:column; }
+    .modal header{ padding:12px 14px; border-bottom:3px solid var(--line); font-weight:800; display:flex; align-items:center; justify-content:space-between; }
+    .modal .body{ padding:12px 14px; overflow:auto; display:flex; flex-direction:column; gap:10px; }
+    .modal .footer{ padding:12px 14px; border-top:3px solid var(--line); display:flex; justify-content:flex-end; gap:8px; }
+    .form-grid{ display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
+    .form-grid .full{ grid-column: 1 / -1; }
+    @media (max-width: 720px){ .form-grid{ grid-template-columns: 1fr; } }
+    .close-x{ border:2px solid var(--line); background:#fff; border-radius:10px; width:32px; height:32px; font-weight:900; cursor:pointer; }
+    @media (min-width: 900px){ .grid.cols-2{ grid-template-columns: 1fr 2fr; } }
+
+    label{ font-weight:700; }
+    input, select, button, textarea{
+      font: inherit; color: inherit; background: #fff; border:3px solid var(--line); border-radius: 10px; padding:8px 10px; outline:none;
+    }
+    input:focus, select:focus, textarea:focus{ box-shadow: 4px 4px 0 #00000020; }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .row > *{ flex: 0 0 auto; }
+    .grow{ flex: 1 1 auto; }
+
+    .btn{ font-weight:800; border-radius:14px; cursor:pointer; box-shadow:6px 6px 0 #00000020; }
+    .btn:active{ transform: translate(1px,1px); box-shadow:4px 4px 0 #00000025; }
+    .wide-btn{ width:100%; max-width:420px; }
+    @media (min-width: 900px){ .wide-btn{ width:auto; } }
+    .btn.primary{ background: var(--accent); }
+    .btn.line{ background:#fff; }
+    .btn.warn{ background: #fff; border-color: var(--warn); color: var(--warn); }
+
+    table{ width:100%; border-collapse: separate; border-spacing:0; }
+    th, td{ border-bottom:2px solid var(--line); padding:8px; text-align:left; }
+    thead th{ background:#fff7d1; border-top:2px solid var(--line); }
+    tbody tr{ background:#fff; }
+    tbody tr:nth-child(odd){ background:#fffef7; }
+    tbody td, thead th{ border-left:2px solid var(--line); }
+    tbody td:last-child, thead th:last-child{ border-right:2px solid var(--line); }
+    tbody tr:last-child td{ border-bottom:2px solid var(--line); }
+
+    .badge{ display:inline-block; padding:2px 8px; border:2px solid var(--line); border-radius:999px; font-size:.85rem; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .table-tools{ display:flex; align-items:center; gap:8px; justify-content:flex-end; margin:8px 0; }
+    .sticky-footer{ position: static; inset: auto; margin-top: 16px; }
+    .sticky-inner{ max-width:1200px; margin:0 auto; padding: 0 16px; }
+    .footer-card{ background:#fff; border:3px solid var(--line); border-radius: 18px; padding:10px; display:flex; gap:8px; align-items:center; justify-content:space-between; box-shadow:6px 6px 0 #00000015; flex-wrap:wrap; }
+    .footer-card .row{ gap:8px; }
+
+    .small{ font-size:.9rem; color:var(--muted); }
+    .right{ text-align:right; }
+
+    .kbd{ border:2px solid var(--line); padding:0 6px; border-radius:8px; background:#fff; }
+  .cards{ display:grid; gap:12px; }
+    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow: 6px 6px 0 #00000015; }
+    .card-row h4{ margin:0 0 6px; font-size:1rem; }
+    .pill{ display:inline-block; border:2px solid var(--line); padding:2px 8px; border-radius:999px; font-weight:700; }
+    .kv{ display:grid; gap:6px; }
+    .kv-row{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:8px; }
+    .kv-row .k{ color:var(--muted); font-size:.9rem; }
+    .kv-row .v{ font-weight:700; font-variant-numeric: tabular-nums; }
+    @media (min-width: 720px){ .kv-row{ grid-template-columns: 220px 1fr; } }
+  .fab{ position: fixed; inset-inline-end: 12px; inset-block-end: 16px; width:44px; height:44px; border:3px solid var(--line); border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:6px 6px 0 #00000015; cursor:pointer; z-index:1000; }
+    .fab:hover{ transform: translate(-1px,-1px); }
+    .modal{ position: fixed; inset:0; display:none; z-index:1001; }
+    .modal.open{ display:block; }
+    .modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+    .modal-dialog{ position:absolute; right:5%; top:10%; width:min(900px, 92vw); height:min(80vh, 800px); background:#fff; border:3px solid var(--line); border-radius:14px; box-shadow:10px 10px 0 #00000030; overflow:hidden; }
+    .modal-titlebar{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-bottom:3px solid var(--line); background:#fff7d1; }
+    .modal-body{ width:100%; height: calc(100% - 46px); }
+    .modal-body iframe{ width:100%; height:100%; border:0; background:#fff; }
+  .modal.minimized .modal-dialog{ width: 340px; height: 240px; right: 12px; bottom: 12px; top: auto; }
+    .modal.minimized .modal-titlebar{ padding:6px 8px; }
+    .modal.minimized .modal-body{ height: calc(100% - 40px); }
+    .modal.minimized .modal-body iframe{ pointer-events:none; opacity:.85; }
+    .modal-titlebar .actions{ display:flex; gap:6px; }
+  [aria-labelledby="recipe-h"]{ display:none !important; }
+  .fab{ position:fixed; right:16px; bottom:16px; z-index:1500; }
+    .addfab{ font-size:1.6rem; width:56px; height:56px; line-height:1; display:inline-flex; align-items:center; justify-content:center; border-radius:16px; }
+    .results-group{ border:3px solid var(--line); border-radius:16px; padding:10px; margin:10px 0 14px; }
+    .results-group summary{ cursor:pointer; font-weight:800; list-style:none; }
+    .results-group summary::-webkit-details-marker{ display:none; }
+    .results-group.edible{ background:#fff6e5; }
+    .results-group.purchase{ background:#e9f6ff; }
+    .backdrop{ z-index:2000; }
+    .no-scroll{ overflow:hidden; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Plate Sale Portion & Purchase Calculator</h1>
+    <p>Enter plates & overage, then define each per-plate recipe ingredient with its purchase pack and yield. The tool computes total edible amounts and exact purchase packs (e.g., 64&nbsp;oz mayo jars, 8&nbsp;lb pork butts).</p>
+
+    <div class="grid cols-2">
+      <!-- Left: Settings -->
+      <section class="card" aria-labelledby="settings-h">
+        <h2 id="settings-h">Settings</h2>
+        <div class="row">
+          <label for="plates">Plates</label>
+          <input id="plates" type="number" min="1" step="1" value="200"/>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <label for="overage">Overage %</label>
+          <input id="overage" type="number" min="0" step="1" value="10"/>
+          <span class="small">Covers seconds, spillage, no-shows.</span>
+        </div>
+
+        <h2 style="margin-top:18px">Quick Start</h2>
+        <p class="small">Use the presets on the right, then tweak. Add more rows as needed. You can also <span class="kbd">Export</span> your recipe JSON.</p>
+        <div class="row" style="margin-top:6px; gap:6px;">
+          <button id="loadDefaults" class="btn line">Load BBQ Plate Preset</button>
+          <button id="clearAll" class="btn warn">Clear All Rows</button>
+        </div>
+
+        <h2 style="margin-top:18px">Choose Ingredients</h2>
+        <div class="row" style="gap:8px;">
+          <button id="btnAddIng" class="btn primary wide-btn" onclick="openIngredientModal('create')">+ Add Ingredient</button>
+          <button id="btnCalc" class="btn line wide-btn" onclick="openCalculator()">Calculator</button>
+        </div>
+
+        <h2 style="margin-top:18px">Import / Export</h2>
+        <div class="row">
+          <button id="exportJson" class="btn" onclick="exportJSON()">Export JSON</button>
+          <input id="importFile" type="file" accept="application/json"/>
+          <button id="importJson" class="btn" onclick="btnImport()">Import</button>
+        </div>
+      </section>
+
+      <!-- Right: Recipe Table -->
+      <section class="card" aria-labelledby="recipe-h">
+        <h2 id="recipe-h">Per-Plate Recipe → Purchase Packs</h2>
+        <div class="table-tools"><!-- (hidden recipe tools removed) --></div>
+        <div class="table-wrap" style="overflow:auto;">
+          <table id="recipeTable" aria-describedby="recipeHelp">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Ingredient</th>
+                <th>Per-Plate Qty</th>
+                <th>Per-Plate Unit
+                  <div class="small">oz / lb / piece</div>
+                </th>
+                <th>Yield (edible per 1 purchase unit)<div class="small">e.g., pork butt 0.60; dry beans 2.5</div></th>
+                <th>Purchase Unit
+                  <div class="small">lb / oz / piece</div>
+                </th>
+                <th>Pack Size</th>
+                <th>Pack Unit
+                  <div class="small">must match purchase unit</div>
+                </th>
+                <th>Unit Cost
+                  <div class="small">per purchase unit</div>
+                </th>
+                <th>Pack Cost
+                  <div class="small">per pack/case</div>
+                </th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <!-- rows inserted by JS -->
+            </tbody>
+          </table>
+        </div>
+        <p id="recipeHelp" class="small">Example: Mayo in 64 oz jars → Purchase Unit=oz, Pack Size=64, Pack Unit=oz, Yield=1.00. For raw meats: set Purchase Unit=lb and Yield as edible per 1 lb raw (e.g., 0.60).</p>
+      </section>
+    </div>
+
+    <!-- Results -->
+    <section class="card" style="margin-top:16px;" aria-labelledby="results-h">
+      <h2 id="results-h">Results</h2>
+      <div class="row">
+        <div class="badge">Plates x Overage = <span id="effectivePlates" class="mono">220</span></div>
+      </div>
+
+      <details class="results-group edible" open>
+        <summary>Edible Needs (per ingredient)</summary>
+        <div id="edibleCards" class="cards" style="margin-top:8px;"></div>
+      </details>
+
+      <details class="results-group purchase">
+        <summary>Purchase Requirements (by SKU/pack)</summary>
+        <div id="purchaseCards" class="cards" style="margin-top:8px;"></div>
+      </details>
+    </section>
+  </div>
+    </section>
+  </div>
+
+  <!-- Ingredient Modal -->
+  <div id="ingBackdrop" class="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ingTitle">
+      <header>
+        <div id="ingTitle">Add / Edit Ingredient</div>
+        <button class="close-x" onclick="closeIngredientModal()">×</button>
+      </header>
+      <div class="body">
+        <form id="ingForm" onsubmit="event.preventDefault(); saveIngredientFromModal();">
+          <div class="form-grid">
+            <label class="full">Item
+              <input id="f_item" type="text" />
+            </label>
+            <label class="full">Ingredient
+              <input id="f_ingredient" type="text" />
+            </label>
+            <label>Per‑Plate Qty
+              <input id="f_ppqty" type="number" step="0.01" min="0" />
+            </label>
+            <label>Per‑Plate Unit
+              <select id="f_ppunit">
+                <option value="oz">oz</option>
+                <option value="lb">lb</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label>Yield per Purchase Unit
+              <input id="f_yield" type="number" step="0.01" min="0" />
+            </label>
+            <label>Purchase Unit
+              <select id="f_pu">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label>Pack Size
+              <input id="f_packsize" type="number" step="0.01" min="0" />
+            </label>
+            <label>Pack Unit
+              <select id="f_packunit">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label>Unit Cost
+              <input id="f_unitcost" type="number" step="0.01" min="0" />
+            </label>
+            <label>Pack Cost
+              <input id="f_packcost" type="number" step="0.01" min="0" />
+            </label>
+            <label class="full">Notes
+              <input id="f_notes" type="text" />
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="footer">
+        <button class="btn line" onclick="closeIngredientModal()">Cancel</button>
+        <button class="btn primary" onclick="saveIngredientFromModal()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-footer">
+    <div class="sticky-inner">
+      <div class="footer-card">
+        <div class="row">
+          <strong>Totals:</strong>
+          <span class="badge">Grand Total: <span id="grandTotal" class="mono">$0.00</span></span>
+          <span class="badge">Cost / Plate: <span id="costPerPlate" class="mono">$0.00</span></span>
+        </div>
+        <div class="row">
+          <button id="recalc" class="btn primary" onclick="calcAll()">Recalculate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<script>
+// Lightweight runtime error surface so we can see issues on-page
+(function(){
+  const banner = document.createElement('div');
+  banner.id = 'errBanner';
+  banner.style.cssText = 'position:fixed;inset:8px 8px auto auto;background:#ffe1e1;color:#8b0000;border:3px solid #8b0000;padding:6px 10px;border-radius:10px;z-index:9999;display:none;font-family:ui-sans-serif,system-ui;box-shadow:4px 4px 0 #00000020;';
+  banner.textContent = 'Script error';
+  document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(banner));
+  window.addEventListener('error', (e)=>{
+    banner.style.display='block';
+    banner.textContent = 'Error: ' + (e.message||'unknown');
+    console.error('Runtime error:', e);
+  });
+})();
+// ------- Utilities -------
+const byId = (id) => document.getElementById(id);
+const ozToLb = (oz) => oz/16;
+const lbToOz = (lb) => lb*16;
+
+function num(v, d=0){
+  const n = Number(v);
+  return Number.isFinite(n) ? n : d;
+}
+
+// ------- Data Model -------
+function emptyRow(){
+  return {
+    item: "",
+    ingredient: "",
+    perPlateQty: 0,
+    perPlateUnit: "oz",   // oz | lb | piece
+    yieldPerPurchaseUnit: 1, // edible per 1 purchase unit
+    purchaseUnit: "lb",   // lb | oz | piece
+    packSize: 1,           // how many purchase units per pack
+    packUnit: "lb",       // must match purchaseUnit
+    unitCost: 0,           // cost per purchase unit
+    packCost: 0,           // cost per pack
+    notes: ""
+  };;
+}
+
+let rows = [];
+
+// Example preset for your menu
+function bbqPreset(){
+  return [
+    // Beans (dry → cooked). If you purchase dry by lb and expect 2.5 lb cooked per lb dry.
+    { item:"Beans", ingredient:"Beans (dry → cooked)", perPlateQty:4, perPlateUnit:"oz", yieldPerPurchaseUnit:2.5, purchaseUnit:"lb", packSize:20, packUnit:"lb", notes:"Dry → cooked ≈2.5 lb per 1 lb dry; 20 lb bag"},
+
+    // Potato salad: prepared by the lb, 5 lb tubs
+    { item:"Potato Salad", ingredient:"Potato salad (prepared)", perPlateQty:5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"lb", packSize:5, packUnit:"lb", notes:"Prepared tubs 5 lb"},
+
+    // Mayo for potato salad: 64 oz jars, unit=oz to count exact jars
+    { item:"Potato Salad", ingredient:"Mayonnaise (64 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"oz", packSize:64, packUnit:"oz", notes:"64 oz jar"},
+
+    // Bread slices
+    { item:"Bread", ingredient:"Bread slices", perPlateQty:1, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:20, packUnit:"piece", notes:"~20 slices/loaf"},
+
+    // Pulled pork (raw pork butt → edible). Yield ~0.60 edible lb per 1 lb raw. Typical butt ≈ 8 lb.
+    { item:"Pulled Pork", ingredient:"Pork butt (raw → pulled)", perPlateQty:6, perPlateUnit:"oz", yieldPerPurchaseUnit:0.60, purchaseUnit:"lb", packSize:8, packUnit:"lb", notes:"60% yield; ~8 lb average"},
+
+    // Brownie squares, per pan
+    { item:"Dessert", ingredient:"Brownie squares", perPlateQty:1, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:12, packUnit:"piece", notes:"12 squares per pan"},
+  ];
+}
+
+// ------- DOM Row Rendering -------
+function makeRowDOM(r, index){
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input aria-label="Item" data-field="item" value="${r.item}"></td>
+    <td><input aria-label="Ingredient" data-field="ingredient" value="${r.ingredient}"></td>
+    <td><input aria-label="Per-Plate Qty" data-field="perPlateQty" type="number" min="0" step="0.01" value="${r.perPlateQty}"></td>
+    <td>
+      <select aria-label="Per-Plate Unit" data-field="perPlateUnit">
+        <option value="oz" ${r.perPlateUnit==="oz"?"selected":""}>oz</option>
+        <option value="lb" ${r.perPlateUnit==="lb"?"selected":""}>lb</option>
+        <option value="piece" ${r.perPlateUnit==="piece"?"selected":""}>piece</option>
+      </select>
+    </td>
+    <td><input aria-label="Yield per purchase unit" data-field="yieldPerPurchaseUnit" type="number" min="0" step="0.01" value="${r.yieldPerPurchaseUnit}"></td>
+    <td>
+      <select aria-label="Purchase Unit" data-field="purchaseUnit">
+        <option value="lb" ${r.purchaseUnit==="lb"?"selected":""}>lb</option>
+        <option value="oz" ${r.purchaseUnit==="oz"?"selected":""}>oz</option>
+        <option value="piece" ${r.purchaseUnit==="piece"?"selected":""}>piece</option>
+      </select>
+    </td>
+    <td><input aria-label="Pack Size" data-field="packSize" type="number" min="0" step="0.01" value="${r.packSize}"></td>
+    <td>
+      <select aria-label="Pack Unit" data-field="packUnit">
+        <option value="lb" ${r.packUnit==="lb"?"selected":""}>lb</option>
+        <option value="oz" ${r.packUnit==="oz"?"selected":""}>oz</option>
+        <option value="piece" ${r.packUnit==="piece"?"selected":""}>piece</option>
+      </select>
+    </td>
+    <td><input aria-label="Unit Cost" data-field="unitCost" type="number" min="0" step="0.01" value="${r.unitCost??0}"></td>
+    <td><input aria-label="Pack Cost" data-field="packCost" type="number" min="0" step="0.01" value="${r.packCost??0}"></td>
+    <td><input aria-label="Notes" data-field="notes" value="${r.notes||""}"></td>
+    <td><button class="btn line del">✕</button></td>
+  `;
+
+  // Generic data binding via data-field
+  tr.querySelectorAll('[data-field]').forEach(el => {
+    el.addEventListener('input', e => {
+      const field = e.target.getAttribute('data-field');
+      let val = e.target.value;
+      if(["perPlateQty","yieldPerPurchaseUnit","packSize","unitCost","packCost"].includes(field)){
+        val = num(val, 0);
+      }
+      rows[index][field] = (field.endsWith('Unit') && e.target.tagName==='SELECT') ? val : val;
+      dirtyCalc();
+    });
+    el.addEventListener('change', e => {
+      const field = e.target.getAttribute('data-field');
+      let val = e.target.value;
+      if(["perPlateUnit","purchaseUnit","packUnit"].includes(field)){
+        rows[index][field] = val;
+      }
+      dirtyCalc();
+    });
+  });
+
+  tr.querySelector('.del').addEventListener('click', () => {
+    rows.splice(index,1);
+    renderTable();
+    calcAll();
+  });
+
+  return tr;
+}
+
+function renderTable(){
+  const tbody = byId('tbody');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => tbody.appendChild(makeRowDOM(r, i)));
+}
+
+// ------- Calculations -------
+let editingIndex = null; // null=create, number=edit row index
+
+function ensureIngredientModal(){
+  if(document.getElementById('ingBackdrop')) return;
+  const tpl = document.createElement('div');
+  tpl.innerHTML = `
+  <div id="ingBackdrop" class="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ingTitle">
+      <header>
+        <div id="ingTitle">Add / Edit Ingredient</div>
+        <button class="close-x" onclick="closeIngredientModal()">×</button>
+      </header>
+      <div class="body">
+        <form id="ingForm" onsubmit="event.preventDefault(); saveIngredientFromModal();">
+          <div class="form-grid">
+            <label class="full">Item
+              <input id="f_item" type="text" />
+            </label>
+            <label class="full">Ingredient
+              <input id="f_ingredient" type="text" />
+            </label>
+            <label>Per‑Plate Qty
+              <input id="f_ppqty" type="number" step="0.01" min="0" />
+            </label>
+            <label>Per‑Plate Unit
+              <select id="f_ppunit">
+                <option value="oz">oz</option>
+                <option value="lb">lb</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label>Yield per Purchase Unit
+              <input id="f_yield" type="number" step="0.01" min="0" />
+            </label>
+            <label>Purchase Unit
+              <select id="f_pu">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label>Pack Size
+              <input id="f_packsize" type="number" step="0.01" min="0" />
+            </label>
+            <label>Pack Unit
+              <select id="f_packunit">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+            <label>Unit Cost
+              <input id="f_unitcost" type="number" step="0.01" min="0" />
+            </label>
+            <label>Pack Cost
+              <input id="f_packcost" type="number" step="0.01" min="0" />
+            </label>
+            <label class="full">Notes
+              <input id="f_notes" type="text" />
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="footer">
+        <button class="btn line" onclick="closeIngredientModal()">Cancel</button>
+        <button class="btn primary" onclick="saveIngredientFromModal()">Save</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(tpl.firstElementChild);
+}
+
+function openIngredientModal(mode='create', index=null){
+  ensureIngredientModal();
+  document.body.classList.add('no-scroll');
+  editingIndex = (mode==='edit') ? index : null;
+  const b = document.getElementById('ingBackdrop');
+  b.setAttribute('data-open','true');
+  b.setAttribute('aria-hidden','false');
+  const r = (editingIndex!=null) ? rows[editingIndex] : emptyRow();
+  byId('ingTitle').textContent = editingIndex!=null ? 'Edit Ingredient' : 'Add Ingredient';
+  byId('f_item').value = r.item||'';
+  byId('f_ingredient').value = r.ingredient||'';
+  byId('f_ppqty').value = r.perPlateQty||0;
+  byId('f_ppunit').value = r.perPlateUnit||'oz';
+  byId('f_yield').value = r.yieldPerPurchaseUnit||1;
+  byId('f_pu').value = r.purchaseUnit||'lb';
+  byId('f_packsize').value = r.packSize||0;
+  byId('f_packunit').value = r.packUnit||'lb';
+  byId('f_unitcost').value = r.unitCost||0;
+  byId('f_packcost').value = r.packCost||0;
+  byId('f_notes').value = r.notes||'';
+}
+function closeIngredientModal(){
+  const b = document.getElementById('ingBackdrop');
+  if(!b) return;
+  b.removeAttribute('data-open');
+  b.setAttribute('aria-hidden','true');
+  document.body.classList.remove('no-scroll');
+}
+// close on backdrop click or ESC
+document.addEventListener('click', (e)=>{
+  const b = document.getElementById('ingBackdrop');
+  if(!b || b.getAttribute('data-open')!=="true") return;
+  if(e.target === b) closeIngredientModal();
+});
+window.addEventListener('keydown', (e)=>{
+  const b = document.getElementById('ingBackdrop');
+  if(e.key==='Escape' && b && b.getAttribute('data-open')==='true') closeIngredientModal();
+});
+// close on backdrop click or ESC
+document.addEventListener('click', (e)=>{
+  const b = document.getElementById('ingBackdrop');
+  if(!b || b.getAttribute('data-open')!=="true") return;
+  if(e.target === b) closeIngredientModal();
+});
+window.addEventListener('keydown', (e)=>{
+  const b = document.getElementById('ingBackdrop');
+  if(e.key==='Escape' && b && b.getAttribute('data-open')==='true') closeIngredientModal();
+});
+function saveIngredientFromModal(){
+  const r = {
+    item: byId('f_item').value.trim(),
+    ingredient: byId('f_ingredient').value.trim(),
+    perPlateQty: num(byId('f_ppqty').value,0),
+    perPlateUnit: byId('f_ppunit').value,
+    yieldPerPurchaseUnit: num(byId('f_yield').value,1),
+    purchaseUnit: byId('f_pu').value,
+    packSize: num(byId('f_packsize').value,0),
+    packUnit: byId('f_packunit').value,
+    unitCost: num(byId('f_unitcost').value,0),
+    packCost: num(byId('f_packcost').value,0),
+    notes: byId('f_notes').value.trim(),
+  };
+  if(editingIndex!=null){ rows[editingIndex] = r; }
+  else { rows.push(r); }
+  closeIngredientModal();
+  renderTable();
+  calcAll();
+}
+function deleteRow(i){ rows.splice(i,1); renderTable(); calcAll(); }
+
+
+function effectivePlates(){
+  const plates = num(byId('plates').value, 0);
+  const ov = num(byId('overage').value, 0);
+  return Math.ceil(plates * (1 + ov/100));
+}
+
+function perPlateEdibleToOz(qty, unit){
+  if(unit === 'oz') return qty;
+  if(unit === 'lb') return lbToOz(qty);
+  if(unit === 'piece') return 0; // pieces handled separately
+  return 0;
+}
+
+function perPlatePieces(qty, unit){
+  return unit === 'piece' ? qty : 0;
+}
+
+function summarizeEdible(){
+  // Returns array of { item, ingredient, edibleOz, edibleLb, pieces }
+  const eff = effectivePlates();
+  return rows.map(r => {
+    const edibleOzPerPlate = perPlateEdibleToOz(r.perPlateQty, r.perPlateUnit);
+    const ediblePiecesPerPlate = perPlatePieces(r.perPlateQty, r.perPlateUnit);
+    const edibleOz = edibleOzPerPlate * eff;
+    const pieces = ediblePiecesPerPlate * eff;
+    const edibleLb = ozToLb(edibleOz);
+    return { item:r.item, ingredient:r.ingredient, edibleOz, edibleLb, pieces };
+  });
+}
+
+function purchaseForRow(r, edible){
+  // Determine purchase qty in purchase units, then packs
+  // edible: {edibleOz, edibleLb, pieces}
+  // r.purchaseUnit: lb/oz/piece; r.yieldPerPurchaseUnit: edible per 1 purchase unit
+  let edibleInPurchaseUnit = 0;
+  if(r.purchaseUnit === 'lb') edibleInPurchaseUnit = edible.edibleLb;
+  else if(r.purchaseUnit === 'oz') edibleInPurchaseUnit = edible.edibleOz;
+  else if(r.purchaseUnit === 'piece') edibleInPurchaseUnit = edible.pieces;
+
+  let purchaseQty = 0;
+  if(r.yieldPerPurchaseUnit > 0){
+    purchaseQty = edibleInPurchaseUnit / r.yieldPerPurchaseUnit;
+  }
+  const packs = (r.packSize && r.packSize > 0) ? Math.ceil(purchaseQty / r.packSize) : 0;
+  return { purchaseQty, packs };
+}
+
+function calcAll(){
+  // Effective plates indicator
+  byId('effectivePlates').textContent = effectivePlates();
+
+  // Edible table
+  // Render Edible cards
+  const edibleWrap = byId('edibleCards');
+  edibleWrap.innerHTML = '';
+  const edibleRows = summarizeEdible();
+  edibleRows.forEach((e, idx) => {
+    const r = rows[idx];
+    const showPieces = e.pieces > 0;
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.innerHTML = `
+      <h4>${r.item ? `${r.item} – ` : ''}${r.ingredient||''}</h4>
+      <div class="kv">
+        <div class="kv-row"><div class="k">Per‑plate</div><div class="v">${r.perPlateQty} ${r.perPlateUnit}</div></div>
+        <div class="kv-row"><div class="k">Effective Plates</div><div class="v">${effectivePlates()}</div></div>
+        <div class="kv-row"><div class="k">Total Edible (oz)</div><div class="v">${e.edibleOz.toFixed(2)}</div></div>
+        <div class="kv-row"><div class="k">Total Edible (lb)</div><div class="v">${e.edibleLb.toFixed(2)}</div></div>
+        ${showPieces ? `<div class="kv-row"><div class="k">Total Pieces</div><div class="v">${e.pieces}</div></div>` : ''}
+      </div>
+    `;
+    edibleWrap.appendChild(row);
+  });
+
+  // Render Purchase cards + totals
+  const purchaseWrap = byId('purchaseCards');
+  purchaseWrap.innerHTML = '';
+  let grandTotal = 0;
+  const eff = effectivePlates();
+  edibleRows.forEach((e, idx) => {
+    const r = rows[idx];
+    const { purchaseQty, packs } = purchaseForRow(r, e);
+    const packCost = num(r.packCost, 0);
+    const unitCost = num(r.unitCost, 0);
+    const totalCost = packCost > 0 ? (packs * packCost) : (unitCost > 0 ? (purchaseQty * unitCost) : 0);
+    grandTotal += totalCost;
+
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    row.innerHTML = `
+      <h4>${r.ingredient||''} <span class="pill">${r.packSize} ${r.packUnit} / pack</span></h4>
+      <div class="kv">
+        <div class="kv-row"><div class="k">Purchase Unit</div><div class="v">${r.purchaseUnit}</div></div>
+        <div class="kv-row"><div class="k">Qty to Buy</div><div class="v">${purchaseQty.toFixed(2)} ${r.purchaseUnit}</div></div>
+        <div class="kv-row"><div class="k">Packs (ceil)</div><div class="v">${packs}</div></div>
+        ${unitCost>0?`<div class="kv-row"><div class="k">Unit Cost</div><div class="v">$${unitCost.toFixed(2)} / ${r.purchaseUnit}</div></div>`:''}
+        ${packCost>0?`<div class="kv-row"><div class="k">Pack Cost</div><div class="v">$${packCost.toFixed(2)} / pack</div></div>`:''}
+        <div class="kv-row"><div class="k">Total Cost</div><div class="v">$${totalCost.toFixed(2)}</div></div>
+        ${r.notes?`<div class="kv-row"><div class="k">Notes</div><div class="v">${r.notes}</div></div>`:''}
+      </div>
+    `;
+    purchaseWrap.appendChild(row);
+  });
+  byId('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
+  const cpp = (grandTotal>0 && eff>0) ? grandTotal/eff : 0;
+  byId('costPerPlate').textContent = `$${cpp.toFixed(2)}`;
+
+  // Post-process: inject Edit/Delete actions into each purchase card
+  const cards = purchaseWrap.querySelectorAll('.card-row');
+  cards.forEach((card, i) => {
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    actions.innerHTML = `
+      <button class="icon-btn" title="Edit" onclick="openIngredientModal('edit', ${i})">✎</button>
+      <button class="icon-btn danger" title="Delete" onclick="deleteRow(${i})">×</button>
+    `;
+    card.appendChild(actions);
+  });
+}
+
+function dirtyCalc(){
+  // Debounce-ish simple recalc
+  window.clearTimeout(dirtyCalc._t);
+  dirtyCalc._t = window.setTimeout(calcAll, 60);
+}
+
+// ------- Import / Export -------
+function exportJSON(){
+  const data = {
+    plates: num(byId('plates').value, 0),
+    overage: num(byId('overage').value, 0),
+    rows
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'plate_sale_recipe.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function importJSON(file){
+  const text = await file.text();
+  const data = JSON.parse(text);
+  byId('plates').value = num(data.plates, 0);
+  byId('overage').value = num(data.overage, 0);
+  rows = Array.isArray(data.rows) ? data.rows : [];
+  renderTable();
+  calcAll();
+}
+
+// ------- Wire UI -------
+function wireUI(){
+  const safe = (id, ev, fn)=>{ const el = byId(id); if(!el){ console.warn('Missing element #'+id); return; } el.addEventListener(ev, fn); };
+  safe('addRow','click', () => { rows.push(emptyRow()); renderTable(); calcAll(); });
+  safe('recalc','click', calcAll);
+  safe('plates','input', dirtyCalc);
+  safe('overage','input', dirtyCalc);
+  safe('exportJson','click', exportJSON);
+  safe('importJson','click', () => {
+    const f = byId('importFile')?.files?.[0];
+    if(!f){ alert('Choose a JSON file to import.'); return; }
+    importJSON(f);
+  });
+  safe('loadDefaults','click', () => { rows = bbqPreset(); renderTable(); calcAll(); });
+  safe('clearAll','click', () => { rows = []; renderTable(); calcAll(); });
+  // Modal
+  safe('calcFab','click', openCalcModal);
+  safe('calcClose','click', closeCalcModal);
+}
+
+// Fallback global onclick handlers (in case event listeners are blocked in some envs)
+function btnLoadDefaults(){ rows = bbqPreset(); renderTable(); calcAll(); }
+function btnClearAll(){ rows = []; renderTable(); calcAll(); }
+function btnAddRow(){ rows.push(emptyRow()); renderTable(); calcAll(); }
+function btnImport(){ const f = byId('importFile')?.files?.[0]; if(!f){ alert('Choose a JSON file to import.'); return; } importJSON(f); }
+
+// Modal open/close
+function openCalcModal(){
+  const m = byId('calcModal');
+  const f = byId('calcFrame');
+  if(f && (!f.src || f.src === 'about:blank')){ f.src = 'calculator.html'; }
+  m.classList.add('open');
+  m.classList.remove('minimized');
+  m.setAttribute('aria-hidden','false');
+  updateMinButton();
+}
+function closeCalcModal(){
+  const m = byId('calcModal');
+  m.classList.remove('open');
+  m.classList.remove('minimized');
+  m.setAttribute('aria-hidden','true');
+  updateMinButton();
+}
+function minimizeCalcModal(){
+  const m = byId('calcModal');
+  if(!m.classList.contains('open')) openCalcModal();
+  m.classList.add('minimized');
+  updateMinButton();
+}
+function restoreCalcModal(){
+  const m = byId('calcModal');
+  m.classList.remove('minimized');
+  updateMinButton();
+}
+function toggleMinimizeCalcModal(){
+  const m = byId('calcModal');
+  if(m.classList.contains('minimized')) restoreCalcModal(); else minimizeCalcModal();
+}
+function updateMinButton(){
+  const m = byId('calcModal');
+  const b = byId('calcMin');
+  if(!b) return;
+  b.textContent = m.classList.contains('minimized') ? '⬜' : '–';
+  b.title = m.classList.contains('minimized') ? 'Restore' : 'Minimize';
+}
+
+// Initialize after DOM is ready
+function init(){
+  rows = bbqPreset();
+  renderTable();
+  calcAll();
+  wireUI();
+  // Modal keyboard close
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeCalcModal(); });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+function openCalculator(){
+  const ids = ['calcBackdrop','calculatorBackdrop','calculatorModal'];
+  for(const id of ids){
+    const el = document.getElementById(id);
+    if(el){
+      document.body.classList.add('no-scroll');
+      el.setAttribute('data-open','true');
+      return;
+    }
+  }
+  // Fallback: navigate to calculator page (works locally; ensure Amplify rewrites allow it)
+  try { window.location.href = './calculator.html'; } catch(e){ console.warn('Calculator navigation failed', e); }
+}
+</script>
+  
+  <!-- Floating Calculator Button & Modal -->
+  <button id="calcFab" class="fab" title="Open calculator" aria-label="Open calculator" onclick="openCalcModal()">🧮</button>
+  <div id="calcModal" class="modal" aria-hidden="true" role="dialog" aria-label="Calculator">
+    <div class="modal-backdrop" onclick="closeCalcModal()"></div>
+    <div class="modal-dialog">
+      <div class="modal-titlebar" ondblclick="restoreCalcModal()">
+        <span class="title"><strong>Calculator</strong></span>
+        <div class="actions">
+          <button id="calcMin" class="btn line" aria-label="Minimize calculator" title="Minimize" onclick="toggleMinimizeCalcModal()">–</button>
+          <button id="calcClose" class="btn line" aria-label="Close calculator" onclick="closeCalcModal()">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <iframe id="calcFrame" src="about:blank" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>

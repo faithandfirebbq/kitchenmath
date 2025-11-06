@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Neobrutalism Calculator (UI Only)</title>
+<style>
+  :root{
+    --bg: #fffdf5;            /* paper-ish background */
+    --ink: #111;              /* text and borders */
+    --accent: #6c6eff;        /* primary accent */
+    --accent-2: #a8a9ff;      /* secondary accent */
+    --accent-3: #d0ffa8;      /* tertiary accent */
+    --shadow: #111;           /* hard drop shadow color */
+    --radius: 10px;           /* tiny rounding (neo still likes corners) */
+    --stroke: 3px;            /* thick outline */
+    --shadow-offset: 6px;     /* offset shadow distance */
+    --gap: 10px;              /* grid gaps */
+    --btn-size: clamp(56px, 8.5vw, 72px); /* responsive button size */
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    display:grid;
+    place-items:center;
+    padding: 24px;
+  }
+
+  .frame{
+    width: min(420px, 92vw);
+  }
+
+  .calc{
+    background: white;
+    border: var(--stroke) solid var(--ink);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow);
+    display: grid;
+    gap: var(--gap);
+  }
+
+  /* Header bar */
+  .calc__title{
+    font-weight: 800;
+    letter-spacing: .5px;
+    border: var(--stroke) solid var(--ink);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    background: linear-gradient(0deg, #a8a9ff 0%, var(--accent) 100%);
+    box-shadow: 3px 3px 0 var(--ink);
+    text-transform: uppercase;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .badge{
+    font-size: 12px;
+    font-weight: 800;
+    padding: 6px 10px;
+    border: var(--stroke) solid var(--ink);
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  /* Display */
+  .screen{
+    display:flex; align-items:center; justify-content:flex-end;
+    min-height: 76px;
+    padding: 14px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+    font-size: clamp(1.4rem, 4.5vw, 2rem);
+    background: #f4f4f4;
+    border: var(--stroke) solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .screen small{
+    margin-right:auto;
+    font-weight:700;
+    opacity:.9;
+  }
+
+  /* Key grid */
+  .keys{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap);
+  }
+
+  .btn{
+    height: var(--btn-size);
+    display:grid;
+    place-items:center;
+    font-weight: 900;
+    font-size: clamp(1rem, 3.2vw, 1.25rem);
+    border-radius: var(--radius);
+    border: var(--stroke) solid var(--ink);
+    background:#fff;
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    user-select: none;
+    transition: transform .02s ease-in, box-shadow .02s ease-in;
+  }
+
+  /* Color roles */
+  .btn--utility { background: #12f3c1a3; }
+  .btn--op      { background: var(--accent-2); }
+  .btn--eq      { background: var(--accent-3); }
+  .btn--zero    { grid-column: span 2; }
+  .btn--tall    { grid-row: span 2; height: calc(var(--btn-size)*2 + var(--gap)); }
+
+  /* Neobrutalist “press” effect */
+  .btn:active{
+    transform: translate(3px,3px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+
+  /* Fun hover (kept subtle; neo avoids soft glows) */
+  .btn:hover{
+    outline: 4px solid rgba(0,0,0,0.08);
+  }
+
+  /* Footer note */
+  .note{
+    text-align:center;
+    font-size:.9rem;
+    margin-top:8px;
+    font-weight:700;
+  }
+
+  /* High-contrast focus for a11y (even without JS) */
+  .btn:focus-visible,
+  .screen:focus-visible{
+    outline: 4px dashed var(--ink);
+    outline-offset: 2px;
+  }
+
+  /* Optional “dark neo” variant: add class .neo-dark to .calc */
+  .neo-dark{
+    background: #f9ff6a;
+  }
+  .neo-dark .screen{ background:#fffbe6; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="calc">
+      <div class="calc__title">
+        <span>CALC-9000</span>
+        <span class="badge">NEO UI</span>
+      </div>
+
+      <div class="screen" aria-label="Display" tabindex="0">
+        <small>ANS</small> 0
+      </div>
+
+      <div class="keys" aria-hidden="true">
+        <div class="btn btn--utility">AC</div>
+        <div class="btn btn--utility">±</div>
+        <div class="btn btn--utility">%</div>
+        <div class="btn btn--op">÷</div>
+
+        <div class="btn">7</div>
+        <div class="btn">8</div>
+        <div class="btn">9</div>
+        <div class="btn btn--op">×</div>
+
+        <div class="btn">4</div>
+        <div class="btn">5</div>
+        <div class="btn">6</div>
+        <div class="btn btn--op">−</div>
+
+        <div class="btn">1</div>
+        <div class="btn">2</div>
+        <div class="btn">3</div>
+        <div class="btn btn--op">+</div>
+
+        <div class="btn btn--zero">0</div>
+        <div class="btn">.</div>
+        <div class="btn btn--eq btn--tall">=</div>
+      </div>
+    </div>
+
+    <p class="note"></p>
+  </div>
+</body>
+</html>

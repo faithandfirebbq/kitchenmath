@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <style>
     :root{
-      --bg:#fffef9; --ink:#111; --muted:#6b7280; --accent:#ffcc00; --accent-2:#b6f0ff; --line:#111; --warn:#ef4444;
+      --bg:#fffef9; --ink:#111; --muted:#6b7280; --accent:#ffcc00; --accent-2:#b6f0ff; --line:#111; --warn:#ef4444; --box-shadow: #00000015; --btn-shadow: #00000031;
       --radius:14px;
     }
     html, body { height:100%; }
@@ -24,21 +24,21 @@
     p{ margin:.25rem 0 .75rem; color:var(--muted); }
 
     /* Cards */
-    .card{ background:#fff; border:3px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:6px 6px 0 #00000015; width: -webkit-fill-available ;max-width: 600px;}
+    .card{ background:#fff; border:3px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:6px 6px 0 var(--box-shadow); width: -webkit-fill-available ;max-width: 600px;}
     .grid{ display:flex; gap:16px; flex-wrap: wrap; justify-content: center;}
     @media (min-width:900px){ .grid.cols-2{ grid-template-columns:1fr; justify-items: center;} }
     #plates, #overage {text-align: right; max-width: 45%;}
     label {text-align: left;}
 
     .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .grow{ flex:1 1 auto; display: none;}
+    .grow{ flex:1 1 auto; display: flex; gap: 0.5em}
 
     label{ font-weight:700; }
     input, select, button, textarea{ font:inherit; color:inherit; background:#fff; border:3px solid var(--line); border-radius:10px; padding:8px 10px; outline:none; }
-    input:focus, select:focus, textarea:focus{ box-shadow:4px 4px 0 #00000020; }
+    input:focus, select:focus, textarea:focus{ box-shadow:4px 4px 0 var(--box-shadow); }
 
-    .btn{ font-weight:800; border-radius:14px; cursor:pointer; box-shadow:6px 6px 0 #00000020; background:#fff; }
-    .btn:active{ transform:translate(1px,1px); box-shadow:4px 4px 0 #00000025; }
+    .btn{ font-weight:800; border-radius:14px; cursor:pointer; box-shadow:6px 6px 0 var(--btn-shadow); background:#fff; }
+    .btn:active{ transform:translate(1px,1px); box-shadow:3px 3px 0 var(--box-shadow); }
     .btn.primary{ background:var(--accent); }
     .btn.secondary{ background:var(--accent-2); }
     .btn.warn{ background:#fff; border-color:var(--warn); color:var(--warn); }
@@ -68,7 +68,7 @@
 
     /* Card list */
     .cards{ display:grid; gap:12px; }
-    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow:6px 6px 0 #00000015; position:relative; }
+    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow:6px 6px 0 var(--box-shadow); position:relative; }
     .card-row h4{ margin:0 0 6px; font-size:1rem; padding-right:70px; }
     .pill{ display:inline-block; border:2px solid var(--line); padding:2px 8px; border-radius:999px; font-weight:700; }
     .kv{ display:grid; gap:6px; }
@@ -95,13 +95,13 @@
     details[open] summary::after {transform: rotate(180deg)}
 
     .sticky-footer{ margin-top:16px; }
-    .footer-card{ background:#fff; border:3px solid var(--line); border-radius:18px; padding:10px; display:grid; gap:8px; align-items:center; justify-content:space-around; justify-items: center; box-shadow:6px 6px 0 #00000015; flex-wrap:wrap; }
+    .footer-card{ background:#fff; border:3px solid var(--line); border-radius:18px; padding:10px; display:grid; gap:8px; align-items:center; justify-content:space-around; justify-items: center; box-shadow:6px 6px 0 var(--box-shadow); flex-wrap:wrap; }
 
     /* Unified modal system */
     .modal{ position:fixed; inset:0; display:none; z-index:2000; }
     .modal.open{ display:block; }
     .modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.45); }
-    .modal-dialog{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,92vw); max-height:86vh; background:#fff; border:3px solid var(--line); border-radius:16px; box-shadow:12px 12px 0 #00000030; overflow:hidden; display:flex; flex-direction:column; }
+    .modal-dialog{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,92vw); max-height:86vh; background:#fff; border:3px solid var(--line); border-radius:16px; box-shadow:12px 12px 0 var(--box-shadow); overflow:hidden; display:flex; flex-direction:column; }
     .modal-titlebar{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; border-bottom:3px solid var(--line); background:#fff7d1; }
     .modal-body{ overflow:auto; padding:12px; flex:1; }
     .modal-body iframe{ width:100%; height:100%; border:0; background:#fff; }
@@ -111,7 +111,15 @@
     .formfield {width: 30%;text-align: end;}
 
     /* Tiny error banner */
-    #errBanner{ position:fixed; right:8px; top:8px; background:#ffe1e1; color:#8b0000; border:3px solid #8b0000; padding:6px 10px; border-radius:10px; z-index:5000; display:none; box-shadow:4px 4px 0 #00000020; }
+    #errBanner{ position:fixed; right:8px; top:8px; background:#ffe1e1; color:#8b0000; border:3px solid #8b0000; padding:6px 10px; border-radius:10px; z-index:5000; display:none; box-shadow:4px 4px 0 var(--box-shadow); }
+
+    /* Floating calculator button */
+    .calc-fab{position: fixed;right: 16px;bottom: 16px;width: fit-content;height: 100px;padding: 0;border: none;background: transparent; cursor: pointer;z-index: 1000;}
+    .calc-fab img,.calc-fab svg{width: 100%;height: 100%;display: block;}
+
+    /* Optional: focus-visible ring for keyboard users */
+    .calc-fab:focus-visible{outline: 3px solid #000;outline-offset: 4px;}
+
   </style>
 </head>
 <body>
@@ -123,21 +131,28 @@
     <div class="grid cols-2">
       <!-- Settings -->
       <section class="card" aria-labelledby="settings-h">
-        <h2 id="settings-h">Settings</h2>
+        <h2 id="settings-h">Unit Volume</h2>
         <div class="row settings">
-          <label for="plates">Plates</label>
-          <input id="plates" type="number" min="1" step="1" value="200" />
+          <label for="plates">Units</label>
+          <input id="plates" type="number" min="1" step="1" value="10" />
         </div>
         <div class="row settings" style="margin-top:8px;">
           <label for="overage">Overage %</label>
           <input id="overage" type="number" min="0" step="1" value="10" />
         </div>
         <div class="row" style="margin-top:8px;">
-          <span class="mono badge" style="display:none;">Yield <span id="effectivePlates">220</span></span>
+          <span class="mono badge" style="display:none;">Yield <span id="effectivePlates">10</span></span>
           <img id="yieldBadge" class="shields" src="https://img.shields.io/badge/yield-someQuantity-blue" alt="yield">
         </div>
       </section>
-          <button id="btnCalc" class="btn line wide-btn">Calculator</button>
+
+      <button id="btnCalc" class="btn line wide-btn" style="display: none;">Calculator</button>
+      <!-- Calculator FAB -->
+      <button id="calcFab" class="calc-fab" aria-label="Open calculator">
+        <!-- Use your file path as appropriate -->
+        <img src="./calculator.svg" alt="" />
+      </button>
+
       <section class="card" aria-labelledby="settings-h">
         <h2>Presets</h2>
         <div class="row" style="margin-top:6px; gap:6px;">
@@ -160,10 +175,6 @@
               <button id="btnAddIng" class="btn primary wide-btn">+ Add New Item</button>
               <button id="clearAll" class="btn warn wide-btn">🗑 Clear All Items</button>
               <button id="btnAddPre" class="btn secondary wide-btn">🖫 Save as Preset</button>
-            </div>
-          </div>
-          <div class="col2">
-            <div class="row" style="gap:8px;">
             </div>
           </div>
           <div class="grow">
@@ -361,6 +372,18 @@
     ];
   }
 
+  function chipsDrinksPreset(){
+  return [
+    {
+      item: "test",ingredient: "chips",perPlateQty: 1,perPlateUnit: "piece",yieldPerPurchaseUnit: 10,purchaseUnit: "piece",packSize: 10,packUnit: "piece",unitCost: 0,packCost: 10,notes: ""
+    },
+    {
+      item: "test",ingredient: "drinks",perPlateQty: 1,perPlateUnit: "piece",yieldPerPurchaseUnit: 10,purchaseUnit: "piece",packSize: 10,packUnit: "piece",unitCost: 0,packCost: 10,notes: ""
+    }
+  ];
+}
+
+
   // --- Hidden table rendering (kept minimal) ---
   function makeRowDOM(r, index){
     const tr = document.createElement('tr');
@@ -412,88 +435,202 @@
 
   // --- Calculations & Cards ---
   let editingIndex = null;
-  function effectivePlates(){ const plates=num(byId('plates').value,0); const ov=num(byId('overage').value,0); return Math.ceil(plates*(1+ov/100)); }
-  function perPlateproductionToOz(qty,unit){ if(unit==='oz') return qty; if(unit==='lb') return lbToOz(qty); return 0; }
-  function perPlatePieces(qty,unit){ return unit==='piece'?qty:0; }
+
+  /* ---------- helpers ---------- */
+  const toNum = (v, d=0) => Number.isFinite(+v) ? +v : d;
+  const normUnit = (u) => (u||'').toString().trim().toLowerCase()
+    .replace(/lbs?$/,'lb')
+    .replace(/ounces?$/,'oz')
+    .replace(/pieces?$/,'piece')
+    .replace(/\s+/g,''); // tolerate minor typos/spaces
+
+  function effectivePlates(){
+    const plates = Math.max(0, Math.trunc(num(byId('plates').value, 0)));
+    const ov     = Math.max(0, +num(byId('overage').value, 0)); // allow decimal %
+    const extra  = Math.ceil((plates * ov) / 100);               // add only the extra
+    return plates + extra;                                       // 200 @10% => 220
+  }
+
+  function perPlateproductionToOz(qty, unit){
+    const u = normUnit(unit);
+    if (u === 'oz') return qty;
+    if (u === 'lb') return lbToOz(qty);
+    return 0;
+  }
+  function perPlatePieces(qty, unit){ return normUnit(unit) === 'piece' ? qty : 0; }
 
   function summarizeproduction(){
     const eff = effectivePlates();
     return rows.map(r=>{
-      const productionOzPerPlate = perPlateproductionToOz(r.perPlateQty,r.perPlateUnit);
-      const productionPiecesPerPlate = perPlatePieces(r.perPlateQty,r.perPlateUnit);
-      const productionOz = productionOzPerPlate*eff; const pieces = productionPiecesPerPlate*eff; const productionLb = ozToLb(productionOz);
+      const productionOzPerPlate     = perPlateproductionToOz(r.perPlateQty, r.perPlateUnit);
+      const productionPiecesPerPlate = perPlatePieces(r.perPlateQty, r.perPlateUnit);
+      const productionOz = productionOzPerPlate * eff;
+      const pieces       = productionPiecesPerPlate * eff;
+      const productionLb = ozToLb(productionOz);
       return { item:r.item, ingredient:r.ingredient, productionOz, productionLb, pieces, eff };
     });
-  } 
-
-  function purchaseForRow(r, production){
-    let productionInPurchaseUnit = 0;
-    if(r.purchaseUnit==='lb') productionInPurchaseUnit = production.productionLb;
-    else if(r.purchaseUnit==='oz') productionInPurchaseUnit = production.productionOz;
-    else if(r.purchaseUnit==='piece') productionInPurchaseUnit = production.pieces;
-    const purchaseQty = (r.yieldPerPurchaseUnit>0) ? (productionInPurchaseUnit / r.yieldPerPurchaseUnit) : 0;
-    const packs = (r.packSize && r.packSize>0) ? Math.ceil(purchaseQty / r.packSize) : 0;
-    return { purchaseQty, packs };
   }
+
+  /* ---------- supply-order math (packs-aware & yield-normalized) ---------- */
+
+  // Convert the per-row need into its purchase unit
+  function needInPurchaseUnit(row, eff){
+    const pu = normUnit(row.purchaseUnit);
+    const needPieces = perPlatePieces(row.perPlateQty, row.perPlateUnit) * eff;
+    const needOz     = perPlateproductionToOz(row.perPlateQty, row.perPlateUnit) * eff;
+
+    switch (pu) {
+      case 'piece': return { need: needPieces, unit: 'piece' };
+      case 'oz':    return { need: needOz, unit: 'oz' };
+      case 'lb':    return { need: ozToLb(needOz), unit: 'lb' };
+      default:      return { need: 0, unit: pu };
+    }
+  }
+
+  // Normalize yield:
+  // - For 'piece', yield should be 1 piece per purchase unit.
+  // - For weight units, use the provided number (defaults to 1 if blank/0).
+  function normalizeYield(row, unitNorm){
+    let yld = toNum(row.yieldPerPurchaseUnit, 0);
+    if (unitNorm === 'piece') return 1;         // force sane default for pieces
+    return yld > 0 ? yld : 1;                   // weights: assume 1 if not given
+  }
+
+  function computeOrderRow(row, eff){
+    const purchaseUnit = normUnit(row.purchaseUnit);
+    const packUnit     = normUnit(row.packUnit) || purchaseUnit;  // default same
+    const packSize     = toNum(row.packSize, 0);
+    const unitCost     = toNum(row.unitCost, 0);
+    const packCost     = toNum(row.packCost, 0);
+
+    // Need expressed in purchase unit (before yield)
+    const { need } = needInPurchaseUnit(row, eff);
+
+    // Apply yield (how much usable you get from one *purchase unit*)
+    const yld = normalizeYield(row, purchaseUnit);
+    const requiredPurchaseUnits = need / yld;   // e.g., 11 pieces / 1 = 11 purchase units
+
+    // Pack detection: unit must match (piece↔piece, lb↔lb, oz↔oz) and size > 0
+    const hasPack = packSize > 0 && packUnit === purchaseUnit;
+
+    let packs = 0;
+    let qtyToBuy = requiredPurchaseUnits;       // still in purchase unit
+    let totalCost = 0;
+
+    if (hasPack){
+      // Round up to whole packs, then buy packs * packSize purchase units
+      packs    = Math.ceil(requiredPurchaseUnits / packSize);
+      qtyToBuy = packs * packSize;
+
+      totalCost = packCost > 0
+        ? packs * packCost
+        : qtyToBuy * unitCost;
+    } else {
+      // No packs—buy the exact required units (weights may be fractional)
+      totalCost = requiredPurchaseUnits * unitCost;
+    }
+
+    return {
+      item: row.item,
+      ingredient: row.ingredient,
+      purchaseUnit,
+      qtyToBuy,
+      packs,
+      unitCost,
+      packCost,
+      totalCost,
+      packSize,
+      packUnit
+    };
+  }
+
+  /* ----------------- Rendering & totals ----------------- */
 
   function calcAll(){
     const eff = effectivePlates();
     byId('effectivePlates').textContent = eff;
-    
-    const productionWrap = byId('productionCards'); productionWrap.innerHTML='';
+
+    // Production cards
+    const productionWrap = byId('productionCards');
+    productionWrap.innerHTML = '';
     const productionRows = summarizeproduction();
-    productionRows.forEach((e,idx)=>{
-      const r = rows[idx]; if(!r) return;
-      const showPieces = e.pieces>0; const row = document.createElement('div'); row.className='card-row';
-      row.innerHTML = `
+    productionRows.forEach((e, idx)=>{
+      const r = rows[idx]; if (!r) return;
+      const showPieces = e.pieces > 0;
+      const rowEl = document.createElement('div');
+      rowEl.className = 'card-row';
+      rowEl.innerHTML = `
         <h4>${r.item?`${r.item} – `:''}${r.ingredient||''}</h4>
         <div class="kv">
-          <div class="kv-row"><div class="k">Per‑plate</div><div class="v">${r.perPlateQty} ${r.perPlateUnit}</div></div>
-          <div class="kv-row"><div class="k">Effective Plates</div><div class="v">${effectivePlates()}</div></div>
+          <div class="kv-row"><div class="k">Per-plate</div><div class="v">${r.perPlateQty} ${r.perPlateUnit}</div></div>
+          <div class="kv-row"><div class="k">Effective Plates</div><div class="v">${eff}</div></div>
           <div class="kv-row"><div class="k">Total production (oz)</div><div class="v">${e.productionOz.toFixed(2)}</div></div>
           <div class="kv-row"><div class="k">Total production (lb)</div><div class="v">${e.productionLb.toFixed(2)}</div></div>
           ${showPieces?`<div class="kv-row"><div class="k">Total Pieces</div><div class="v">${e.pieces}</div></div>`:''}
         </div>`;
-      productionWrap.appendChild(row);
+      productionWrap.appendChild(rowEl);
     });
 
-    const purchaseWrap = byId('purchaseCards'); purchaseWrap.innerHTML='';
-    let grandTotal = 0; 
-    productionRows.forEach((e,idx)=>{
-      const r = rows[idx]; if(!r) return; const {purchaseQty,packs} = purchaseForRow(r,e);
-      const packCost=num(r.packCost,0), unitCost=num(r.unitCost,0);
-      const totalCost = packCost>0 ? (packs*packCost) : (unitCost>0 ? (purchaseQty*unitCost) : 0);
-      grandTotal += totalCost;
-      const row = document.createElement('div'); row.className='card-row';
-      row.innerHTML = `
-        <h4>${r.ingredient||''} <span class="pill">${r.packSize} ${r.packUnit} / pack</span></h4>
+    // Supply order cards
+    const purchaseWrap = byId('purchaseCards');
+    purchaseWrap.innerHTML = '';
+    let grandTotal = 0;
+
+    rows.forEach((r, idx)=>{
+      const order = computeOrderRow(r, eff);
+      grandTotal += order.totalCost;
+
+      const card = document.createElement('div');
+      card.className = 'card-row';
+
+      const packPill = (order.packSize>0)
+        ? `<span class="pill">${order.packSize} ${order.packUnit} / pack</span>` : '';
+
+      const packsRow = (order.packs>0)
+        ? `<div class="kv-row"><div class="k">Packs (ceil)</div><div class="v">${order.packs}</div></div>` : '';
+
+      const unitCostRow = (order.packCost>0)
+        ? `<div class="kv-row"><div class="k">Pack Cost</div><div class="v">$${order.packCost.toFixed(2)} / pack</div></div>`
+        : (order.unitCost>0
+            ? `<div class="kv-row"><div class="k">Unit Cost</div><div class="v">$${order.unitCost.toFixed(2)} / ${order.purchaseUnit}</div></div>`
+            : '');
+
+      const qtyDecimals = order.purchaseUnit === 'piece' ? 0 : 2;
+
+      card.innerHTML = `
+        <h4>${order.ingredient||''} ${packPill}</h4>
         <div class="kv">
-          <div class="kv-row"><div class="k">Purchase Unit</div><div class="v">${r.purchaseUnit}</div></div>
-          <div class="kv-row"><div class="k">Qty to Buy</div><div class="v">${purchaseQty.toFixed(2)} ${r.purchaseUnit}</div></div>
-          <div class="kv-row"><div class="k">Packs (ceil)</div><div class="v">${packs}</div></div>
-          ${unitCost>0?`<div class="kv-row"><div class="k">Unit Cost</div><div class="v">$${unitCost.toFixed(2)} / ${r.purchaseUnit}</div></div>`:''}
-          ${packCost>0?`<div class="kv-row"><div class="k">Pack Cost</div><div class="v">$${packCost.toFixed(2)} / pack</div></div>`:''}
-          <div class="kv-row"><div class="k">Total Cost</div><div class="v">$${totalCost.toFixed(2)}</div></div>
+          <div class="kv-row"><div class="k">Purchase Unit</div><div class="v">${order.purchaseUnit}</div></div>
+          <div class="kv-row"><div class="k">Qty to Buy</div><div class="v">${order.qtyToBuy.toFixed(qtyDecimals)} ${order.purchaseUnit}</div></div>
+          ${packsRow}
+          ${unitCostRow}
+          <div class="kv-row"><div class="k">Total Cost</div><div class="v">$${order.totalCost.toFixed(2)}</div></div>
           ${r.notes?`<div class="kv-row"><div class="k">Notes</div><div class="v">${r.notes}</div></div>`:''}
         </div>`;
-      const actions = document.createElement('div'); actions.className='card-actions';
-      actions.innerHTML = `<button class="icon-btn" title="Edit">✎</button><button class="icon-btn danger" title="Delete">×</button>`;
-      actions.children[0].addEventListener('click', ()=>openIngredientModal('edit',idx));
-      actions.children[1].addEventListener('click', ()=>{ rows.splice(idx,1); renderTable(); calcAll(); });
-      row.appendChild(actions);
-      purchaseWrap.appendChild(row);
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+      actions.innerHTML = `
+        <button class="icon-btn" title="Edit">✎</button>
+        <button class="icon-btn danger" title="Delete">×</button>`;
+      actions.children[0].addEventListener('click', ()=>openIngredientModal('edit', idx));
+      actions.children[1].addEventListener('click', ()=>{
+        rows.splice(idx,1);
+        renderTable(); calcAll();
+      });
+
+      card.appendChild(actions);
+      purchaseWrap.appendChild(card);
     });
 
-    byId('grandTotal').textContent = ` \u00A0$${grandTotal.toFixed(2)}`;
+    byId('grandTotal').textContent  = ` \u00A0$${grandTotal.toFixed(2)}`;
     const cpp = (grandTotal>0 && eff>0) ? grandTotal/eff : 0;
     byId('costPerPlate').textContent = ` \u00A0$${cpp.toFixed(2)}`;
-    
-    // Update Shields.io badge dynamically
+
     const badge = byId('yieldBadge');
-    if (badge) {
-      badge.src = `https://img.shields.io/badge/yield-${encodeURIComponent(eff)}-blue`;
-    }
+    if (badge) badge.src = `https://img.shields.io/badge/yield-${encodeURIComponent(eff)}-blue`;
   }
+
 
   // --- Modal helpers ---
   function openModal(id){ const m=byId(id); if(!m) return; m.classList.add('open'); m.setAttribute('aria-hidden','false'); document.body.classList.add('no-scroll'); }
@@ -537,9 +674,13 @@
 
   // Calculator modal
   function openCalcModal(){
-    const f = byId('calcFrame'); if(f && (!f.src || f.src==='about:blank')) f.src = '/calculator.html';
+    const f = byId('calcFrame'); if(f && (!f.src || f.src==='about:blank')) f.src = './calculator.html';
     openModal('calcModal');
   }
+
+  // Click FAB → open the same calculator modal
+  document.getElementById('calcFab')?.addEventListener('click', openCalcModal);
+
 
   // --- Import/Export ---
   function exportJSON() {
@@ -552,7 +693,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'plate_sale_recipe.json';
+    a.download = 'summary.json';
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -610,22 +751,41 @@
 
   function dirtyCalc(){ window.clearTimeout(dirtyCalc._t); dirtyCalc._t = window.setTimeout(calcAll, 60); }
 
-  // ===== Persistent item-list presets with Save / Load / Delete (no inputs) =====
+  // --- Tests ---
+  function runTests(){
+    const asserts = [];
+    const ok = (name,cond) => asserts.push({name,cond});
+    // Existence
+    ok('openCalcModal exists', typeof openCalcModal==='function');
+    ok('openIngredientModal exists', typeof openIngredientModal==='function');
+    ok('#ingModal present', !!byId('ingModal'));
+    ok('#calcModal present', !!byId('calcModal'));
+    // Preset load & calc
+    rows = bbqPreset(); renderTable(); calcAll();
+    ok('rows preset length > 0', rows.length>0);
+    ok('effective plates > 0', effectivePlates()>0);
+    ok('cost / plate not NaN', !Number.isNaN(Number(byId('costPerPlate').textContent.replace(/[^0-9.]/g,''))));
+    // Modal open/close
+    openIngredientModal('create'); ok('ingModal opens', byId('ingModal').classList.contains('open')); closeModal('ingModal'); ok('ingModal closes', !byId('ingModal').classList.contains('open'));
+    openCalcModal(); ok('calcModal opens', byId('calcModal').classList.contains('open')); closeModal('calcModal'); ok('calcModal closes', !byId('calcModal').classList.contains('open'));
+    // Report
+    const failed = asserts.filter(a=>!a.cond);
+    if(failed.length){ alert('Tests failed:\n'+failed.map(f=>'- '+f.name).join('\n')); } else { alert('All tests passed ('+asserts.length+')'); }
+  }
+
+  // --- Init ---
+  function init(){ rows = chipsDrinksPreset(); renderTable(); calcAll(); wireUI(); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+  // Expose tests
+  byId('runTests').addEventListener('click', runTests);
+
+  // ===== Persistent item-list presets with Save / Load / Delete =====
   const STORAGE_KEY = 'bulkprep:presets';
 
-  const btnAddPre  = document.getElementById('btnAddPre'); // already exists
-  const btnDelPre  = document.getElementById('btnDelPre'); // you said you have this
-  const btnLoadPre = document.getElementById('btnLoadPre'); // add this button in HTML
-  const listView   = document.getElementById('savedPresetsView'); // optional display-only
-
-  // -- adapt these to your app if needed --
-  function getItems() {
-    return window.items || window.bbqPreset?.() || [];
-  }
-  function setItems(data) {
-    window.items = structuredClone(data);
-    if (typeof renderItems === 'function') renderItems();
-  }
+  const btnAddPre  = document.getElementById('btnAddPre');
+  const btnDelPre  = document.getElementById('btnDelPre');
+  const btnLoadPre = document.getElementById('btnLoadPre');
+  const listView   = document.getElementById('savedPresetsView'); // optional display-only list
 
   // --- error banner helper (your look) ---
   function showErrorBanner(msg){
@@ -635,6 +795,48 @@
     b.style.display = 'block';
     clearTimeout(showErrorBanner._t);
     showErrorBanner._t = setTimeout(()=>{ b.style.display='none'; }, 4000);
+  }
+
+  // --- Your app adapters (FIXED to use `rows`) ---
+  function getItems() {
+    // Return a clean clone of the current working dataset
+    return Array.isArray(rows) ? rows.map(r => ({...r})) : [];
+  }
+
+  function setItems(data) {
+    // Defensive parse + coerce numeric fields back to numbers
+    const toNum = (v, d=0) => Number.isFinite(+v) ? +v : d;
+    const clean = (o) => ({
+      item: (o.item ?? '').toString(),
+      ingredient: (o.ingredient ?? '').toString(),
+      perPlateQty: toNum(o.perPlateQty, 0),
+      perPlateUnit: o.perPlateUnit || 'oz',
+      yieldPerPurchaseUnit: toNum(o.yieldPerPurchaseUnit, 1),
+      purchaseUnit: o.purchaseUnit || 'lb',
+      packSize: toNum(o.packSize, 0),
+      packUnit: o.packUnit || 'lb',
+      unitCost: toNum(o.unitCost, 0),
+      packCost: toNum(o.packCost, 0),
+      notes: (o.notes ?? '').toString()
+    });
+
+    rows = Array.isArray(data) ? data.map(clean) : [];
+    renderTable();
+    calcAll();
+
+    // Optional event hook for anything else
+    window.dispatchEvent(new CustomEvent('items:loaded', { detail: { count: rows.length }}));
+  }
+
+  // --- Validation helper (slightly relaxed) ---
+  const ITEM_KEYS = [
+    "item","ingredient","perPlateQty","perPlateUnit",
+    "yieldPerPurchaseUnit","purchaseUnit","packSize","packUnit",
+    "unitCost","packCost"
+  ];
+  function isValidItems(arr){
+    return Array.isArray(arr) &&
+      arr.every(o => o && typeof o === 'object' && ITEM_KEYS.every(k => k in o));
   }
 
   // --- storage helpers ---
@@ -649,7 +851,7 @@
     return Object.keys(loadAllPresets());
   }
 
-  // --- read-only on-page list (no inputs) ---
+  // --- read-only on-page list (optional) ---
   function renderSavedList(){
     if (!listView) return;
     const names = listNames();
@@ -657,24 +859,30 @@
       listView.innerHTML = '<div class="muted">No saved presets.</div>';
       return;
     }
-    const html = [
-      '<div class="preset-list">',
-      '<div class="preset-list__title">Saved presets:</div>',
-      '<ul>',
-      ...names.map(n => `<li>${n}</li>`),
-      '</ul>',
-      '</div>'
-    ].join('');
-    listView.innerHTML = html;
+    listView.innerHTML = `
+      <div class="preset-list">
+        <div class="preset-list__title">Saved presets:</div>
+        <ul>${names.map(n => `<li>${n}</li>`).join('')}</ul>
+      </div>`;
   }
 
-  // --- Save: prompt for name, confirm overwrite ---
+  // --- SAVE: prompt for name, ensure pure JSON, confirm overwrite ---
   btnAddPre?.addEventListener('click', ()=>{
     const items = getItems();
     if (!Array.isArray(items) || items.length === 0){
       showErrorBanner('Nothing to save: your item list is empty.');
       return;
     }
+    // ensure serializable (strip methods/getters/proxies)
+    let serializable;
+    try {
+      serializable = JSON.parse(JSON.stringify(items));
+    } catch (e) {
+      console.error('Serialization failed for items:', e, items);
+      showErrorBanner('Items could not be serialized for saving.');
+      return;
+    }
+
     const name = prompt('Name this item list (preset):');
     if (name === null) return; // canceled
     const trimmed = (name || '').trim();
@@ -684,18 +892,20 @@
     if (Object.prototype.hasOwnProperty.call(all, trimmed)){
       if (!confirm(`"${trimmed}" already exists. Overwrite?`)) return;
     }
+
     try{
-      all[trimmed] = items;
+      all[trimmed] = serializable;
       saveAllPresets(all);
       renderSavedList();
-      alert(`Saved preset "${trimmed}".`);
+      console.log('[Preset] Saved:', trimmed, serializable);
+      alert(`Saved preset "${trimmed}" (${serializable.length} items).`);
     }catch(e){
       console.error(e);
       showErrorBanner('Failed to save preset (storage error).');
     }
   });
 
-  // --- Load: prompt with numbered list or exact name ---
+  // --- LOAD: prompt by number or exact name; validate then set & render ---
   btnLoadPre?.addEventListener('click', ()=>{
     const all = loadAllPresets();
     const names = Object.keys(all);
@@ -715,16 +925,24 @@
     }
     if (!target){ showErrorBanner('No matching preset found.'); return; }
 
+    const data = all[target];
+    if (!isValidItems(data)){
+      console.warn('[Preset] Invalid schema on load for', target, data);
+      showErrorBanner('Saved preset has an invalid format.');
+      return;
+    }
+
     try{
-      setItems(all[target]);
-      alert(`Loaded preset "${target}".`);
+      setItems(data);
+      console.log('[Preset] Loaded:', target, data);
+      alert(`Loaded preset "${target}" (${data.length} items).`);
     }catch(e){
       console.error(e);
       showErrorBanner('Failed to load preset.');
     }
   });
 
-  // --- Delete: prompt with numbered list or exact name ---
+  // --- DELETE: prompt by number or exact name ---
   btnDelPre?.addEventListener('click', ()=>{
     const all = loadAllPresets();
     const names = Object.keys(all);
@@ -757,37 +975,9 @@
     }
   });
 
-  // initial render
+  // initial list render
   renderSavedList();
 
-
-  // --- Tests ---
-  function runTests(){
-    const asserts = [];
-    const ok = (name,cond) => asserts.push({name,cond});
-    // Existence
-    ok('openCalcModal exists', typeof openCalcModal==='function');
-    ok('openIngredientModal exists', typeof openIngredientModal==='function');
-    ok('#ingModal present', !!byId('ingModal'));
-    ok('#calcModal present', !!byId('calcModal'));
-    // Preset load & calc
-    rows = bbqPreset(); renderTable(); calcAll();
-    ok('rows preset length > 0', rows.length>0);
-    ok('effective plates > 0', effectivePlates()>0);
-    ok('cost / plate not NaN', !Number.isNaN(Number(byId('costPerPlate').textContent.replace(/[^0-9.]/g,''))));
-    // Modal open/close
-    openIngredientModal('create'); ok('ingModal opens', byId('ingModal').classList.contains('open')); closeModal('ingModal'); ok('ingModal closes', !byId('ingModal').classList.contains('open'));
-    openCalcModal(); ok('calcModal opens', byId('calcModal').classList.contains('open')); closeModal('calcModal'); ok('calcModal closes', !byId('calcModal').classList.contains('open'));
-    // Report
-    const failed = asserts.filter(a=>!a.cond);
-    if(failed.length){ alert('Tests failed:\n'+failed.map(f=>'- '+f.name).join('\n')); } else { alert('All tests passed ('+asserts.length+')'); }
-  }
-
-  // --- Init ---
-  function init(){ rows = bbqPreset(); renderTable(); calcAll(); wireUI(); }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
-  // Expose tests
-  byId('runTests').addEventListener('click', runTests);
   </script>
 </body>
 </html>

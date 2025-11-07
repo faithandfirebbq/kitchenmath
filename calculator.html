@@ -3,11 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Neo + Neu Calculator (UI Only)</title>
+<title>Neo + Neu Calculator</title>
 <style>
-  /* =====================
-     Theme Tokens
-     ===================== */
   :root{
     --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
     --radius: 12px;
@@ -34,20 +31,21 @@
 
   /* -------- NEU (Neumorphism) -------- */
   [data-theme="neu"]{
-    --bg: #e9edf5;              /* soft bluish grey */
-    --ink: #1b1f27;             /* dark ink */
-    --surface: #eef2f8;         /* raised surface */
-    --accent: #6ea8fe;          /* pill + title tint */
-    --accent-2: #a7f0d1;
+    --bg: #e9edf5;
+    --ink: #1b1f27;
+    --surface: #eef2f8;
+    --accent: #f0f0f0;
+    --accent-2: radial-gradient(#ffffff, #c8ffc2);
     --accent-3: #f9a8c9;
-    --stroke: 0px;              /* no hard outlines */
+    --accent-4: radial-gradient(#ffffff, #c9dbff);
+    --stroke: 0px;
     --shadow-color: rgba(0,0,0,0.15);
-    --shadow-offset: 0px;       /* not used */
+    --shadow-offset: 0px;
     --elev: 0 12px 24px rgba(0,0,0,.15), 0 2px 6px rgba(0,0,0,.12);
     --key-shadow: 8px 8px 16px rgba(0,0,0,.18), -6px -6px 14px rgba(255,255,255,.75);
     --key-inset: inset 6px 6px 12px rgba(0,0,0,.10), inset -6px -6px 12px rgba(255,255,255,.85);
-    --press-transform: translate(0,0); /* neu uses inset instead of translate */
-    --screen-bg: #f7f9fd;
+    --press-transform: translate(0,0);
+    --screen-bg: radial-gradient(#f7f9fd, #d4d4d4);
   }
 
   *{ box-sizing:border-box; }
@@ -69,7 +67,7 @@
     padding: 16px;
     box-shadow: var(--elev);
     display:grid; gap: var(--gap);
-    transition: box-shadow .2s ease, background .2s ease, border-color .2s ease;
+    margin-right: 1em;
   }
 
   .calc__title{
@@ -78,25 +76,10 @@
     border-radius: var(--radius);
     padding: 10px 12px;
     background: linear-gradient(0deg, color-mix(in srgb, var(--accent) 60%, #fff) 0%, var(--accent) 100%);
-    box-shadow: var(--stroke) solid transparent; /* keeps height consistent between themes */
-    text-transform: uppercase;
     display:flex; align-items:center; justify-content:space-between; gap:8px;
+    text-transform: uppercase;
   }
-  .badge{
-    font-size: 12px; font-weight: 800;
-    padding: 6px 10px; border-radius: 999px; white-space:nowrap;
-    border: var(--stroke) solid var(--ink);
-    background: #fff;
-    box-shadow: 2px 2px 0 var(--ink);
-  }
-  [data-theme="neu"] .badge{
-    border: 0; box-shadow: 6px 6px 12px rgba(0,0,0,.18), -6px -6px 12px rgba(255,255,255,.8);
-    background: var(--surface);
-  }
-
-  .toolbar{
-    display:flex; align-items:center; gap:8px;
-  }
+  .toolbar{ display:flex; gap:8px; }
   .toggle{
     display:inline-flex; align-items:center; gap:8px; font-weight:800;
     border: var(--stroke) solid var(--ink);
@@ -105,11 +88,20 @@
     user-select:none;
   }
   [data-theme="neu"] .toggle{
-    border:0; background: var(--surface);
+    border:0; background: var(--accent-4);
     box-shadow: 6px 6px 12px rgba(0,0,0,.18), -6px -6px 12px rgba(255,255,255,.8);
   }
-  .mode-chip{ font-size: 12px; padding:4px 8px; border-radius:999px; background:#fff; border: var(--stroke) solid var(--ink); }
-  [data-theme="neu"] .mode-chip{ border:0; background: var(--surface); box-shadow: inset 3px 3px 6px rgba(0,0,0,.05), inset -3px -3px 6px rgba(255,255,255,.9); }
+  .badge{
+    font-size: 12px; font-weight: 800; align-content: center;
+    padding: 6px 10px; border-radius: 999px; white-space:nowrap;
+    border: var(--stroke) solid var(--ink);
+    background: #fff;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  [data-theme="neu"] .badge{
+    border: 0; box-shadow: 6px 6px 12px rgba(0,0,0,.18), -6px -6px 12px rgba(255,255,255,.8);
+    background: var(--accent-2);
+  }
 
   .screen{
     display:flex; align-items:center; justify-content:flex-end;
@@ -137,7 +129,6 @@
     transition: transform .03s ease, box-shadow .03s ease;
   }
   [data-theme="neu"] .btn{ border:0; background: var(--surface); }
-
   .btn--utility{ background: #e8ffe8; }
   [data-theme="neu"] .btn--utility{ background: var(--surface); }
   .btn--op{ background: var(--accent-2); }
@@ -148,81 +139,245 @@
   .btn--zero{ grid-column: span 2; }
   .btn--tall{ grid-row: span 2; height: calc(var(--btn-size)*2 + var(--gap)); }
 
-  /* Press effect */
   [data-theme="neo"] .btn:active{ transform: var(--press-transform); box-shadow: 1px 1px 0 var(--ink); }
   [data-theme="neu"] .btn:active{ box-shadow: var(--key-inset); }
-
-  .note{ text-align:center; font-size:.9rem; margin-top:8px; font-weight:700; }
-
-  .btn:focus-visible, .screen:focus-visible{
-    outline: 4px dashed var(--ink); outline-offset:2px;
-  }
 </style>
 </head>
 <body>
   <div class="frame">
     <div class="calc" id="calc">
       <div class="calc__title">
-        <span>KM-9000</span>
+        <span>KM-2025</span>
         <div class="toolbar">
-          <!--span class="mode-chip" id="modeChip">NEO</span-->
-          <span class="badge">Ready</span>
+          <button id="themeToggle" class="toggle" aria-pressed="false" type="button">
+            <span id="modeChip">NEU</span>
+          </button>
+          <!--span class="badge">Ready</span-->
         </div>
       </div>
 
       <div class="screen" aria-label="Display" tabindex="0">
-        <small>ANS</small> 0
+        <small id="ans" data-ans>ANS: 0</small>
+        <span id="display" data-display>0</span>
       </div>
 
-      <div class="keys" aria-hidden="true">
-        <div class="btn btn--utility">AC</div>
-        <div class="btn btn--utility">±</div>
-        <div class="btn btn--utility">%</div>
-        <div class="btn btn--op">÷</div>
+      <div class="keys">
+        <button class="btn btn--utility" data-ac>AC</button>
+        <button class="btn btn--utility" data-c>C</button>
+        <button class="btn btn--op" data-percent>%</button>
+        <button class="btn btn--op" data-op="÷">÷</button>
 
-        <div class="btn">7</div>
-        <div class="btn">8</div>
-        <div class="btn">9</div>
-        <div class="btn btn--op">×</div>
+        <button class="btn" data-num="7">7</button>
+        <button class="btn" data-num="8">8</button>
+        <button class="btn" data-num="9">9</button>
+        <button class="btn btn--op" data-op="×">×</button>
 
-        <div class="btn">4</div>
-        <div class="btn">5</div>
-        <div class="btn">6</div>
-        <div class="btn btn--op">−</div>
+        <button class="btn" data-num="4">4</button>
+        <button class="btn" data-num="5">5</button>
+        <button class="btn" data-num="6">6</button>
+        <button class="btn btn--op" data-op="-">-</button>
 
-        <div class="btn">1</div>
-        <div class="btn">2</div>
-        <div class="btn">3</div>
-        <div class="btn btn--op">+</div>
+        <button class="btn" data-num="1">1</button>
+        <button class="btn" data-num="2">2</button>
+        <button class="btn" data-num="3">3</button>
+        <button class="btn btn--op" data-op="+">+</button>
 
-        <div class="btn btn--zero">0</div>
-        <div class="btn">.</div>
-        <div class="btn btn--eq btn--tall">=</div>
+        <button class="btn btn--utility" data-dot>.</button>
+        <button class="btn btn" data-num="0">0</button>
+        <button class="btn btn--op" data-sign>±</button>
+        <button class="btn btn--eq" data-eq>=</button>
       </div>
     </div>
   </div>
 
 <script>
-  (function(){
-    const html = document.documentElement;
-    const btn = document.getElementById('themeToggle');
-    const chip = document.getElementById('modeChip');
+/* ------- Theme toggle ------- */
+(() => {
+  const html = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const chip = document.getElementById('modeChip');
 
-    function setTheme(mode){
-      html.setAttribute('data-theme', mode);
-      chip.textContent = mode.toUpperCase();
-      btn.setAttribute('aria-pressed', String(mode === 'neu'));
+  // Apply theme and show the *other* theme name on button
+  const setTheme = (mode) => {
+    html.setAttribute('data-theme', mode);
+    const next = (mode === 'neo') ? 'NEU' : 'NEO'; // show inactive theme
+    chip.textContent = next;
+    btn.setAttribute('aria-pressed', String(mode === 'neu'));
+  };
+
+  btn.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme') || 'neo';
+    const next = (current === 'neo') ? 'neu' : 'neo';
+    setTheme(next);
+  });
+
+  // Initialize
+  setTheme(html.getAttribute('data-theme') || 'neo');
+})();
+
+
+/* ------- Calculator logic ------- */
+(() => {
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const calc = $('#calc');
+  const disp = $('[data-display]');
+  const ansEl = $('[data-ans]');
+
+  const state = { cur:'0', prev:null, op:null, ans:0, fresh:true, lastOpRight:null, justEvaluated:false };
+
+  const setDisplay = (v) => { disp.textContent = format(v); };
+  const setAns = (v) => { ansEl && (ansEl.textContent = `ANS: ${format(v)}`); };
+  const parse = (s) => (typeof s === 'number' ? s : parseFloat(s || '0')) || 0;
+  const format = (v) => {
+    const n = Number(v);
+    if (!isFinite(n)) return 'Error';
+    const s = (Math.abs(n) >= 1e12 || (Math.abs(n) > 0 && Math.abs(n) < 1e-9))
+      ? n.toExponential(8) : n.toFixed(12);
+    return s.replace(/\.?0+($|e)/, '$1');
+  };
+
+  const clearEntry = () => {
+    state.cur = '0';
+    state.fresh = true;
+    setDisplay(state.cur);
+  };
+
+  const clearAll = () => {
+    state.cur='0'; state.prev=null; state.op=null; state.fresh=true;
+    state.lastOpRight=null; state.justEvaluated=false; state.ans = 0; setDisplay(state.cur); setAns(state.ans);
+  };
+  const inputDigit = (d) => {
+    if (state.fresh){
+      if (state.justEvaluated){
+        state.prev = null;
+        state.op = null;
+        state.lastOpRight = null;
+        state.justEvaluated = false;
+      }
+      state.cur = String(d);
+      state.fresh = false;
+    } else {
+      if (state.cur==='0') state.cur='';
+      state.cur += String(d);
     }
+    setDisplay(state.cur);
+  };
+  const inputDecimal = () => {
+    if (state.fresh){
+      if (state.justEvaluated){
+        state.prev = null;
+        state.op = null;
+        state.lastOpRight = null;
+        state.justEvaluated = false;
+      }
+      state.cur = '0.';
+      state.fresh = false;
+    } else if (!state.cur.includes('.')) {
+      state.cur += '.';
+    }
+    setDisplay(state.cur);
+  };
+  const toggleSign = () => { if (state.cur==='0' || state.cur==='Error') return; state.cur = state.cur.startsWith('-') ? state.cur.slice(1) : '-' + state.cur; setDisplay(state.cur); };
 
-    btn.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme') || 'neo';
-      const next = current === 'neo' ? 'neu' : 'neo';
-      setTheme(next);
-    });
+  const percent = () => {
+    if (state.op && state.prev != null) {
+      const A = state.prev, B = parse(state.cur);
+      state.cur = String(A * (B/100));
+    } else {
+      state.cur = String(parse(state.cur)/100);
+    }
+    setDisplay(state.cur);
+  };
 
-    // initialize
-    setTheme(html.getAttribute('data-theme') || 'neo');
-  })();
+  const normalizeOp = (o) =>
+    (o === '+' || o === '-' || o === '−') ? o :
+    (o === '×' || o === 'x' || o === '*') ? '*' :
+    (o === '÷' || o === '/') ? '/' :
+    null;
+
+  const setOperator = (rawOp) => {
+    const op = normalizeOp(rawOp); if (!op) return;
+    if (state.op && !state.fresh) compute();
+    else state.prev = parse(state.cur);
+    state.op = op; state.fresh = true;
+    state.justEvaluated = false;
+  };
+
+  const operate = (a,b,op) => op==='+'?a+b: op==='-'?a-b: op==='*'?a*b: b===0?NaN:a/b;
+
+  const compute = (repeatEquals=false) => {
+    if (state.op==null){ state.ans=parse(state.cur); setAns(state.ans); return; }
+    const a = state.prev ?? 0;
+    const b = repeatEquals && state.lastOpRight!=null ? state.lastOpRight : parse(state.cur);
+    state.lastOpRight = b;
+    const out = operate(a,b,state.op);
+    if (!isFinite(out)){ state.cur='Error'; state.prev=null; state.op=null; setDisplay(state.cur); return; }
+    state.prev=out; state.cur=String(out); state.ans=out; setAns(out); setDisplay(out); state.fresh=true; state.justEvaluated = true;
+  };
+
+  // Single repeat-equals controller
+  let lastWasEq = false;
+  function handleEqRepeat(){
+    compute(lastWasEq);
+    lastWasEq = true;
+    clearTimeout(handleEqRepeat._t);
+    handleEqRepeat._t = setTimeout(()=> lastWasEq=false, 300);
+  }
+
+  // Clicks
+  calc.addEventListener('click', (e) => {
+    const btn = e.target.closest('button, .btn'); if (!btn || !calc.contains(btn)) return;
+    const d = btn.dataset || {};
+    const t = btn.textContent?.trim();
+    const a =
+      d.num != null ? {type:'num', val:d.num} :
+      d.op ? {type:'op', val:d.op} :
+      ('dot' in d || 'decimal' in d) ? {type:'dot'} :
+      ('ac' in d || 'clear' in d) ? {type:'ac'} :
+      ('c' in d || 'ce' in d) ? {type:'c'} :
+      ('sign' in d) ? {type:'sign'} :
+      ('percent' in d) ? {type:'percent'} :
+      ('eq' in d || 'equals' in d) ? {type:'eq'} :
+      /^\d$/.test(t) ? {type:'num', val:t} :
+      t==='.' ? {type:'dot'} :
+      ['+','-','×','x','*','÷','/'].includes(t) ? {type:'op', val:t} :
+      /^AC$/i.test(t) ? {type:'ac'} :
+      t==='C' || /^CE$/i.test(t) ? {type:'c'} :
+      t==='±' ? {type:'sign'} :
+      t==='%' ? {type:'percent'} :
+      t==='=' ? {type:'eq'} : null;
+
+    if (!a) return;
+
+    switch(a.type){
+      case 'num': inputDigit(a.val); break;
+      case 'dot': inputDecimal(); break;
+      case 'op': setOperator(a.val); break;
+      case 'ac': clearAll(); break;
+      case 'c': clearEntry(); break;
+      case 'sign': toggleSign(); break;
+      case 'percent': percent(); break;
+      case 'eq': handleEqRepeat(); break;
+    }
+  });
+
+  // Keyboard
+  window.addEventListener('keydown', (e) => {
+    const k = e.key;
+    if (/^\d$/.test(k)) inputDigit(k);
+    else if (k === '.') inputDecimal();
+    else if (['+','-','*','/'].includes(k)) setOperator(k);
+    else if (k === 'Enter' || k === '=') { e.preventDefault(); handleEqRepeat(); }
+    else if (k === 'Delete') clearEntry();
+    else if (k === 'Escape') clearAll();
+    else if (k === '%') percent();
+  });
+
+  // Init
+  clearAll();
+  setAns(state.ans);
+})();
+
 </script>
 </body>
 </html>

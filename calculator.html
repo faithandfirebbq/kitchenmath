@@ -1,160 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="neo">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Neobrutalism Calculator (UI Only)</title>
+<title>Neo + Neu Calculator (UI Only)</title>
 <style>
+  /* =====================
+     Theme Tokens
+     ===================== */
   :root{
-    --bg: #fffdf5;            /* paper-ish background */
-    --ink: #111;              /* text and borders */
-    --accent: #6c6eff;        /* primary accent */
-    --accent-2: #a8a9ff;      /* secondary accent */
-    --accent-3: #d0ffa8;      /* tertiary accent */
-    --shadow: #111;           /* hard drop shadow color */
-    --radius: 10px;           /* tiny rounding (neo still likes corners) */
-    --stroke: 3px;            /* thick outline */
-    --shadow-offset: 6px;     /* offset shadow distance */
-    --gap: 10px;              /* grid gaps */
-    --btn-size: clamp(56px, 8.5vw, 72px); /* responsive button size */
-    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+    --radius: 12px;
+    --gap: 10px;
+    --btn-size: clamp(56px, 8.5vw, 72px);
   }
 
-  * { box-sizing: border-box; }
-  html, body { height: 100%; }
+  /* -------- NEO (Neobrutalism) -------- */
+  [data-theme="neo"]{
+    --bg: #fff;
+    --ink: #111;
+    --surface: #ffffff;
+    --accent: #ffcf00;
+    --accent-2: #76e3ff;
+    --accent-3: #ff7aa2;
+    --stroke: 3px;
+    --shadow-color: #111;
+    --shadow-offset: 6px;
+    --elev: 0 var(--shadow-offset) 0 var(--shadow-color);
+    --key-shadow: 4px 4px 0 var(--shadow-color);
+    --press-transform: translate(3px,3px);
+    --screen-bg: #f4f4f4;
+  }
+
+  /* -------- NEU (Neumorphism) -------- */
+  [data-theme="neu"]{
+    --bg: #e9edf5;              /* soft bluish grey */
+    --ink: #1b1f27;             /* dark ink */
+    --surface: #eef2f8;         /* raised surface */
+    --accent: #6ea8fe;          /* pill + title tint */
+    --accent-2: #a7f0d1;
+    --accent-3: #f9a8c9;
+    --stroke: 0px;              /* no hard outlines */
+    --shadow-color: rgba(0,0,0,0.15);
+    --shadow-offset: 0px;       /* not used */
+    --elev: 0 12px 24px rgba(0,0,0,.15), 0 2px 6px rgba(0,0,0,.12);
+    --key-shadow: 8px 8px 16px rgba(0,0,0,.18), -6px -6px 14px rgba(255,255,255,.75);
+    --key-inset: inset 6px 6px 12px rgba(0,0,0,.10), inset -6px -6px 12px rgba(255,255,255,.85);
+    --press-transform: translate(0,0); /* neu uses inset instead of translate */
+    --screen-bg: #f7f9fd;
+  }
+
+  *{ box-sizing:border-box; }
+  html, body{ height:100%; }
   body{
     margin:0;
     background: var(--bg);
     color: var(--ink);
     font-family: var(--font);
-    display:grid;
-    place-items:center;
-    padding: 24px;
+    display:grid; place-items:center;
+    padding:24px;
   }
-
-  .frame{
-    width: min(420px, 92vw);
-  }
+  .frame{ width:min(440px, 94vw); }
 
   .calc{
-    background: white;
+    background: var(--surface);
     border: var(--stroke) solid var(--ink);
     border-radius: var(--radius);
     padding: 16px;
-    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow);
-    display: grid;
-    gap: var(--gap);
+    box-shadow: var(--elev);
+    display:grid; gap: var(--gap);
+    transition: box-shadow .2s ease, background .2s ease, border-color .2s ease;
   }
 
-  /* Header bar */
   .calc__title{
-    font-weight: 800;
-    letter-spacing: .5px;
+    font-weight: 800; letter-spacing:.4px;
     border: var(--stroke) solid var(--ink);
     border-radius: var(--radius);
     padding: 10px 12px;
-    background: linear-gradient(0deg, #a8a9ff 0%, var(--accent) 100%);
-    box-shadow: 3px 3px 0 var(--ink);
+    background: linear-gradient(0deg, color-mix(in srgb, var(--accent) 60%, #fff) 0%, var(--accent) 100%);
+    box-shadow: var(--stroke) solid transparent; /* keeps height consistent between themes */
     text-transform: uppercase;
-    display:flex; align-items:center; justify-content:space-between;
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
   }
   .badge{
-    font-size: 12px;
-    font-weight: 800;
-    padding: 6px 10px;
+    font-size: 12px; font-weight: 800;
+    padding: 6px 10px; border-radius: 999px; white-space:nowrap;
     border: var(--stroke) solid var(--ink);
-    border-radius: 999px;
     background: #fff;
     box-shadow: 2px 2px 0 var(--ink);
   }
+  [data-theme="neu"] .badge{
+    border: 0; box-shadow: 6px 6px 12px rgba(0,0,0,.18), -6px -6px 12px rgba(255,255,255,.8);
+    background: var(--surface);
+  }
 
-  /* Display */
+  .toolbar{
+    display:flex; align-items:center; gap:8px;
+  }
+  .toggle{
+    display:inline-flex; align-items:center; gap:8px; font-weight:800;
+    border: var(--stroke) solid var(--ink);
+    background:#fff; padding:6px 10px; border-radius:999px; cursor:pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    user-select:none;
+  }
+  [data-theme="neu"] .toggle{
+    border:0; background: var(--surface);
+    box-shadow: 6px 6px 12px rgba(0,0,0,.18), -6px -6px 12px rgba(255,255,255,.8);
+  }
+  .mode-chip{ font-size: 12px; padding:4px 8px; border-radius:999px; background:#fff; border: var(--stroke) solid var(--ink); }
+  [data-theme="neu"] .mode-chip{ border:0; background: var(--surface); box-shadow: inset 3px 3px 6px rgba(0,0,0,.05), inset -3px -3px 6px rgba(255,255,255,.9); }
+
   .screen{
     display:flex; align-items:center; justify-content:flex-end;
-    min-height: 76px;
-    padding: 14px;
+    min-height: 80px; padding: 14px;
     font-variant-numeric: tabular-nums;
-    font-weight: 900;
-    font-size: clamp(1.4rem, 4.5vw, 2rem);
-    background: #f4f4f4;
+    font-weight: 900; font-size: clamp(1.4rem, 4.5vw, 2rem);
+    background: var(--screen-bg);
     border: var(--stroke) solid var(--ink);
     border-radius: var(--radius);
     box-shadow: 3px 3px 0 var(--ink);
   }
-  .screen small{
-    margin-right:auto;
-    font-weight:700;
-    opacity:.9;
-  }
+  [data-theme="neu"] .screen{ border:0; box-shadow: var(--key-shadow); }
+  .screen small{ margin-right:auto; font-weight:700; opacity:.9; }
 
-  /* Key grid */
-  .keys{
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--gap);
-  }
+  .keys{ display:grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); }
 
   .btn{
     height: var(--btn-size);
-    display:grid;
-    place-items:center;
-    font-weight: 900;
-    font-size: clamp(1rem, 3.2vw, 1.25rem);
+    display:grid; place-items:center;
+    font-weight:900; font-size: clamp(1rem, 3.2vw, 1.25rem);
     border-radius: var(--radius);
     border: var(--stroke) solid var(--ink);
-    background:#fff;
-    box-shadow: 4px 4px 0 var(--ink);
-    cursor: pointer;
-    user-select: none;
-    transition: transform .02s ease-in, box-shadow .02s ease-in;
+    background:#fff; cursor:pointer; user-select:none;
+    box-shadow: var(--key-shadow);
+    transition: transform .03s ease, box-shadow .03s ease;
   }
+  [data-theme="neu"] .btn{ border:0; background: var(--surface); }
 
-  /* Color roles */
-  .btn--utility { background: #12f3c1a3; }
-  .btn--op      { background: var(--accent-2); }
-  .btn--eq      { background: var(--accent-3); }
-  .btn--zero    { grid-column: span 2; }
-  .btn--tall    { grid-row: span 2; height: calc(var(--btn-size)*2 + var(--gap)); }
+  .btn--utility{ background: #e8ffe8; }
+  [data-theme="neu"] .btn--utility{ background: var(--surface); }
+  .btn--op{ background: var(--accent-2); }
+  [data-theme="neu"] .btn--op{ background: var(--surface); }
+  .btn--eq{ background: var(--accent-3); }
+  [data-theme="neu"] .btn--eq{ background: var(--surface); }
 
-  /* Neobrutalist “press” effect */
-  .btn:active{
-    transform: translate(3px,3px);
-    box-shadow: 1px 1px 0 var(--ink);
+  .btn--zero{ grid-column: span 2; }
+  .btn--tall{ grid-row: span 2; height: calc(var(--btn-size)*2 + var(--gap)); }
+
+  /* Press effect */
+  [data-theme="neo"] .btn:active{ transform: var(--press-transform); box-shadow: 1px 1px 0 var(--ink); }
+  [data-theme="neu"] .btn:active{ box-shadow: var(--key-inset); }
+
+  .note{ text-align:center; font-size:.9rem; margin-top:8px; font-weight:700; }
+
+  .btn:focus-visible, .screen:focus-visible{
+    outline: 4px dashed var(--ink); outline-offset:2px;
   }
-
-  /* Fun hover (kept subtle; neo avoids soft glows) */
-  .btn:hover{
-    outline: 4px solid rgba(0,0,0,0.08);
-  }
-
-  /* Footer note */
-  .note{
-    text-align:center;
-    font-size:.9rem;
-    margin-top:8px;
-    font-weight:700;
-  }
-
-  /* High-contrast focus for a11y (even without JS) */
-  .btn:focus-visible,
-  .screen:focus-visible{
-    outline: 4px dashed var(--ink);
-    outline-offset: 2px;
-  }
-
-  /* Optional “dark neo” variant: add class .neo-dark to .calc */
-  .neo-dark{
-    background: #f9ff6a;
-  }
-  .neo-dark .screen{ background:#fffbe6; }
 </style>
 </head>
 <body>
   <div class="frame">
-    <div class="calc">
+    <div class="calc" id="calc">
       <div class="calc__title">
-        <span>CALC-9000</span>
-        <span class="badge">NEO UI</span>
+        <span>KM-9000</span>
+        <div class="toolbar">
+          <!--span class="mode-chip" id="modeChip">NEO</span-->
+          <span class="badge">Ready</span>
+        </div>
       </div>
 
       <div class="screen" aria-label="Display" tabindex="0">
@@ -187,8 +200,29 @@
         <div class="btn btn--eq btn--tall">=</div>
       </div>
     </div>
-
-    <p class="note"></p>
   </div>
+
+<script>
+  (function(){
+    const html = document.documentElement;
+    const btn = document.getElementById('themeToggle');
+    const chip = document.getElementById('modeChip');
+
+    function setTheme(mode){
+      html.setAttribute('data-theme', mode);
+      chip.textContent = mode.toUpperCase();
+      btn.setAttribute('aria-pressed', String(mode === 'neu'));
+    }
+
+    btn.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme') || 'neo';
+      const next = current === 'neo' ? 'neu' : 'neo';
+      setTheme(next);
+    });
+
+    // initialize
+    setTheme(html.getAttribute('data-theme') || 'neo');
+  })();
+</script>
 </body>
 </html>

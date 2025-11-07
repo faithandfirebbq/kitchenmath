@@ -6,581 +6,606 @@
   <title>Plate Sale Portion & Purchase Calculator</title>
   <style>
     :root{
-      --bg:#fffef9;
-      --ink:#111;
-      --muted:#6b7280;
-      --accent:#ffcc00;
-      --accent2:#ff6b00;
-      --line:#111;
-      --ok:#0ea5e9;
-      --warn:#ef4444;
+      --bg:#fffef9; --ink:#111; --muted:#6b7280; --accent:#ffcc00; --line:#111; --warn:#ef4444;
       --radius:14px;
     }
     html, body { height:100%; }
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      background:var(--bg); color:var(--ink); line-height:1.35;
-    }
-    .wrap{ max-width:1200px; margin: 24px auto 80px; padding: 0 16px; }
-    h1,h2,h3{ margin:0 0 8px 0; }
-    h1{ font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); }
-    h2{ font-size: clamp(1.1rem, 1rem + .8vw, 1.4rem); margin-top:24px; }
+    body{ margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--ink); line-height:1.35; }
+    .wrap{ max-width:1200px; margin:auto; padding:0 16px; width: fit-content;}
+    h1,h2{ margin:0 0 8px; }
+    h1{ font-size:clamp(1.4rem,1.1rem+1.2vw,2rem); }
+    h2{ font-size:clamp(1.1rem,1rem+.8vw,1.4rem); }
     p{ margin:.25rem 0 .75rem; color:var(--muted); }
 
-    /* Neobrutalism-ish cards */
-    .card{ background:#fff; border:3px solid var(--line); border-radius: var(--radius); padding:16px; box-shadow: 6px 6px 0 #00000015; }
-    .grid{ display:grid; gap:16px; }
-    @media (min-width: 900px){ .grid.cols-2{ grid-template-columns: 1fr 2fr; } }
+    /* Cards */
+    .card{ background:#fff; border:3px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:6px 6px 0 #00000015; width: -webkit-fill-available ;max-width: 600px;}
+    .grid{ display:flex; gap:16px; flex-wrap: wrap; justify-content: center;}
+    @media (min-width:900px){ .grid.cols-2{ grid-template-columns:1fr; justify-items: center;} }
+    #plates, #overage {text-align: right; max-width: 45%;}
+    label {text-align: left;}
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .grow{ flex:1 1 auto; }
 
     label{ font-weight:700; }
-    input, select, button, textarea{
-      font: inherit; color: inherit; background: #fff; border:3px solid var(--line); border-radius: 10px; padding:8px 10px; outline:none;
-    }
-    input:focus, select:focus, textarea:focus{ box-shadow: 4px 4px 0 #00000020; }
-    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .row > *{ flex: 0 0 auto; }
-    .grow{ flex: 1 1 auto; }
+    input, select, button, textarea{ font:inherit; color:inherit; background:#fff; border:3px solid var(--line); border-radius:10px; padding:8px 10px; outline:none; }
+    input:focus, select:focus, textarea:focus{ box-shadow:4px 4px 0 #00000020; }
 
-    .btn{ font-weight:800; border-radius:14px; cursor:pointer; }
-    .btn.primary{ background: var(--accent); }
-    .btn.line{ background:#fff; }
-    .btn.warn{ background: #fff; border-color: var(--warn); color: var(--warn); }
+    .btn{ font-weight:800; border-radius:14px; cursor:pointer; box-shadow:6px 6px 0 #00000020; background:#fff; }
+    .btn:active{ transform:translate(1px,1px); box-shadow:4px 4px 0 #00000025; }
+    .btn.primary{ background:var(--accent); }
+    .btn.warn{ background:#fff; border-color:var(--warn); color:var(--warn); }
+    .wide-btn{ width:100%; max-width:420px; }
+    @media (min-width:900px){ .wide-btn{ width:auto; } }
 
-    table{ width:100%; border-collapse: separate; border-spacing:0; }
+    /* Table (kept but hidden for now) */
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
     th, td{ border-bottom:2px solid var(--line); padding:8px; text-align:left; }
     thead th{ background:#fff7d1; border-top:2px solid var(--line); }
-    tbody tr{ background:#fff; }
-    tbody tr:nth-child(odd){ background:#fffef7; }
     tbody td, thead th{ border-left:2px solid var(--line); }
     tbody td:last-child, thead th:last-child{ border-right:2px solid var(--line); }
-    tbody tr:last-child td{ border-bottom:2px solid var(--line); }
+    [aria-labelledby="recipe-h"]{ display:none !important; }
 
-    .badge{ display:inline-block; padding:2px 8px; border:2px solid var(--line); border-radius:999px; font-size:.85rem; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .badge{ display:inline-flex; padding:2px 8px; border:2px solid var(--line); border-radius:999px; font-size:.85rem;}
+    .mono{ display:block; font-family:ui-monospace,Menlo,Consolas,monospace; }
+    .shields {height: 1.75em; padding-right: 1em; padding-top: 0.5em;}
 
-    .table-tools{ display:flex; align-items:center; gap:8px; justify-content:flex-end; margin:8px 0; }
-    .sticky-footer{ position: static; inset: auto; margin-top: 16px; }
-    .sticky-inner{ max-width:1200px; margin:0 auto; padding: 0 16px; }
-    .footer-card{ background:#fff; border:3px solid var(--line); border-radius: 18px; padding:10px; display:flex; gap:8px; align-items:center; justify-content:space-between; box-shadow:6px 6px 0 #00000015; flex-wrap:wrap; }
-    .footer-card .row{ gap:8px; }
-
-    .small{ font-size:.9rem; color:var(--muted); }
-    .right{ text-align:right; }
-
-    .kbd{ border:2px solid var(--line); padding:0 6px; border-radius:8px; background:#fff; }
-  .cards{ display:grid; gap:12px; }
-    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow: 6px 6px 0 #00000015; }
-    .card-row h4{ margin:0 0 6px; font-size:1rem; }
+    /* Card list */
+    .cards{ display:grid; gap:12px; }
+    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow:6px 6px 0 #00000015; position:relative; }
+    .card-row h4{ margin:0 0 6px; font-size:1rem; padding-right:70px; }
     .pill{ display:inline-block; border:2px solid var(--line); padding:2px 8px; border-radius:999px; font-weight:700; }
     .kv{ display:grid; gap:6px; }
-    .kv-row{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:8px; }
+    .kv-row{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px; }
     .kv-row .k{ color:var(--muted); font-size:.9rem; }
-    .kv-row .v{ font-weight:700; font-variant-numeric: tabular-nums; }
-    @media (min-width: 720px){ .kv-row{ grid-template-columns: 220px 1fr; } }
-  .fab{ position: fixed; inset-inline-end: 12px; inset-block-end: 16px; width:44px; height:44px; border:3px solid var(--line); border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:6px 6px 0 #00000015; cursor:pointer; z-index:1000; }
-    .fab:hover{ transform: translate(-1px,-1px); }
-    .modal{ position: fixed; inset:0; display:none; z-index:1001; }
+    .kv-row .v{ font-weight:700; font-variant-numeric:tabular-nums; }
+    @media (min-width:720px){ .kv-row{ grid-template-columns:220px 1fr; } }
+    .card-actions{ position:absolute; top:10px; right:10px; display:flex; gap:6px; }
+    .icon-btn{ width:28px; height:28px; border:0px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size: x-large;}
+    .icon-btn.danger{ color:var(--warn); border-color:var(--warn); }
+    @media screen {.row{justify-content: space-around;}}
+    .settings {display: grid; grid-template-columns: 1fr 1fr; justify-items: end;}
+
+    .results {display: grid; justify-items: center;}
+    /* Results groups */
+    .results-group{ border:3px solid var(--line); border-radius:16px; padding:10px; margin:10px 0 14px; }
+    .results-group summary{ cursor:pointer; font-weight:800; list-style:none; }
+    .results-group summary::-webkit-details-marker{ display:none; }
+    .results-group.production{ background:#fff6e5; }
+    .results-group.purchase{ background:#e9f6ff; }
+    details summary {list-style: none;cursor: pointer;display: flex;align-items: center;justify-content: space-between;padding: 14px 16px;margin:-8px -8px 12px;border-radius:12px}
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after {content: '▾';font-size: 40px;color: var(--ink);transition: transform 0.2s ease}
+    details[open] summary::after {transform: rotate(180deg)}
+
+    .sticky-footer{ margin-top:16px; }
+    .footer-card{ background:#fff; border:3px solid var(--line); border-radius:18px; padding:10px; display:grid; gap:8px; align-items:center; justify-content:space-around; justify-items: center; box-shadow:6px 6px 0 #00000015; flex-wrap:wrap; }
+
+    /* Unified modal system */
+    .modal{ position:fixed; inset:0; display:none; z-index:2000; }
     .modal.open{ display:block; }
-    .modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
-    .modal-dialog{ position:absolute; right:5%; top:10%; width:min(900px, 92vw); height:min(80vh, 800px); background:#fff; border:3px solid var(--line); border-radius:14px; box-shadow:10px 10px 0 #00000030; overflow:hidden; }
-    .modal-titlebar{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-bottom:3px solid var(--line); background:#fff7d1; }
-    .modal-body{ width:100%; height: calc(100% - 46px); }
+    .modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.45); }
+    .modal-dialog{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,92vw); max-height:86vh; background:#fff; border:3px solid var(--line); border-radius:16px; box-shadow:12px 12px 0 #00000030; overflow:hidden; display:flex; flex-direction:column; }
+    .modal-titlebar{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; border-bottom:3px solid var(--line); background:#fff7d1; }
+    .modal-body{ overflow:auto; padding:12px; flex:1; }
     .modal-body iframe{ width:100%; height:100%; border:0; background:#fff; }
-  .modal.minimized .modal-dialog{ width: 340px; height: 240px; right: 12px; bottom: 12px; top: auto; }
-    .modal.minimized .modal-titlebar{ padding:6px 8px; }
-    .modal.minimized .modal-body{ height: calc(100% - 40px); }
-    .modal.minimized .modal-body iframe{ pointer-events:none; opacity:.85; }
-    .modal-titlebar .actions{ display:flex; gap:6px; }
+    .no-scroll{ overflow:hidden; }
+    .form-grid {display: grid;}
+    .full {display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;}
+    .formfield {width: 30%;text-align: end;}
+
+    /* Tiny error banner */
+    #errBanner{ position:fixed; right:8px; top:8px; background:#ffe1e1; color:#8b0000; border:3px solid #8b0000; padding:6px 10px; border-radius:10px; z-index:5000; display:none; box-shadow:4px 4px 0 #00000020; }
   </style>
 </head>
 <body>
+  <div id="errBanner">Script error</div>
   <div class="wrap">
-    <h1>Plate Sale Portion & Purchase Calculator</h1>
-    <p>Enter plates & overage, then define each per-plate recipe ingredient with its purchase pack and yield. The tool computes total edible amounts and exact purchase packs (e.g., 64&nbsp;oz mayo jars, 8&nbsp;lb pork butts).</p>
+    <h1>Bulk Food Prep Calculator</h1>
+    <p>Enter plates & overage, then define per‑plate ingredients with purchase pack & yield. The tool computes production totals and exact purchase packs.</p>
 
     <div class="grid cols-2">
-      <!-- Left: Settings -->
+      <!-- Settings -->
       <section class="card" aria-labelledby="settings-h">
         <h2 id="settings-h">Settings</h2>
-        <div class="row">
+        <div class="row settings">
           <label for="plates">Plates</label>
-          <input id="plates" type="number" min="1" step="1" value="200"/>
+          <input id="plates" type="number" min="1" step="1" value="200" />
+        </div>
+        <div class="row settings" style="margin-top:8px;">
+          <label for="overage">Overage %</label>
+          <input id="overage" type="number" min="0" step="1" value="10" />
         </div>
         <div class="row" style="margin-top:8px;">
-          <label for="overage">Overage %</label>
-          <input id="overage" type="number" min="0" step="1" value="10"/>
-          <span class="small">Covers seconds, spillage, no-shows.</span>
+          <span class="mono badge" style="display:none;">Yield <span id="effectivePlates">220</span></span>
+          <img id="yieldBadge" class="shields" src="https://img.shields.io/badge/yield-someQuantity-blue" alt="yield">
         </div>
-
-        <h2 style="margin-top:18px">Quick Start</h2>
-        <p class="small">Use the presets on the right, then tweak. Add more rows as needed. You can also <span class="kbd">Export</span> your recipe JSON.</p>
+      </section>
+      <section class="card" aria-labelledby="settings-h">
+        <h2>Presets</h2>
         <div class="row" style="margin-top:6px; gap:6px;">
-          <button id="loadDefaults" class="btn line" onclick="btnLoadDefaults()">Load BBQ Plate Preset</button>
-          <button id="clearAll" class="btn warn" onclick="btnClearAll()">Clear All Rows</button>
-        </div>
-
-        <h2 style="margin-top:18px">Import / Export</h2>
-        <div class="row">
-          <button id="exportJson" class="btn" onclick="exportJSON()">Export JSON</button>
-          <input id="importFile" type="file" accept="application/json"/>
-          <button id="importJson" class="btn" onclick="btnImport()">Import</button>
+          <button id="btnCalc" class="btn line wide-btn">Calculator</button>
+          <button id="loadDefaults" class="btn line wide-btn">Church BBQ Plate Lunch</button>
         </div>
       </section>
 
-      <!-- Right: Recipe Table -->
-      <section class="card" aria-labelledby="recipe-h">
-        <h2 id="recipe-h">Per-Plate Recipe → Purchase Packs</h2>
-        <div class="table-tools">
-          <button id="addRow" class="btn primary" onclick="btnAddRow()">+ Add Ingredient Row</button>
+      <section class="card" aria-labelledby="settings-h">
+        <h2 style="margin-top:18px">Supply Order</h2>
+        <div class="row">
+          <button id="importJson" class="btn wide-btn">Import</button>
+          <div class="row" style="gap:8px;">
+            <button id="btnAddIng" class="btn primary">+ Add Item</button>
+            <button id="clearAll" class="btn warn">Clear All Rows</button>
+            <button id="exportJson" class="btn wide-btn">Export</button>
+          </div>
+          <div class="grow"></div>
+          <button style="display: none;" id="runTests" class="btn">Run Tests</button>
         </div>
+      </section>
+
+      <section class="card" aria-labelledby="settings-h">
+        <h2>Totals</h2>
+        <div class="row">
+          <div class="wrap">
+            <div class="row">
+              <span class="badge">Grand Total: <span id="grandTotal" class="mono">$0.00</span></span>
+              <span class="badge">Cost / Plate: <span id="costPerPlate" class="mono">$0.00</span></span>
+            </div>
+            <br>
+            <div class="row">
+              <button id="recalc" class="btn primary">Recalculate</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kept (hidden) table for power editing if needed later -->
+      <section class="card" aria-labelledby="recipe-h">
+        <h2 id="recipe-h">Per‑Plate Recipe → Purchase Packs</h2>
         <div class="table-wrap" style="overflow:auto;">
           <table id="recipeTable" aria-describedby="recipeHelp">
             <thead>
               <tr>
-                <th>Item</th>
-                <th>Ingredient</th>
-                <th>Per-Plate Qty</th>
-                <th>Per-Plate Unit
-                  <div class="small">oz / lb / piece</div>
-                </th>
-                <th>Yield (edible per 1 purchase unit)<div class="small">e.g., pork butt 0.60; dry beans 2.5</div></th>
-                <th>Purchase Unit
-                  <div class="small">lb / oz / piece</div>
-                </th>
-                <th>Pack Size</th>
-                <th>Pack Unit
-                  <div class="small">must match purchase unit</div>
-                </th>
-                <th>Unit Cost
-                  <div class="small">per purchase unit</div>
-                </th>
-                <th>Pack Cost
-                  <div class="small">per pack/case</div>
-                </th>
-                <th>Notes</th>
-                <th></th>
+                <th>Item</th><th>Ingredient</th><th>Per‑Plate Qty</th><th>Per‑Plate Unit</th>
+                <th>Yield (production / 1 purchase unit)</th><th>Purchase Unit</th><th>Pack Size</th><th>Pack Unit</th>
+                <th>Unit Cost</th><th>Pack Cost</th><th>Notes</th><th></th>
               </tr>
             </thead>
-            <tbody id="tbody">
-              <!-- rows inserted by JS -->
-            </tbody>
+            <tbody id="tbody"></tbody>
           </table>
         </div>
-        <p id="recipeHelp" class="small">Example: Mayo in 64 oz jars → Purchase Unit=oz, Pack Size=64, Pack Unit=oz, Yield=1.00. For raw meats: set Purchase Unit=lb and Yield as edible per 1 lb raw (e.g., 0.60).</p>
+        <p id="recipeHelp" class="small">Example: mayo 64oz jars → PU=oz, Pack Size=64, Pack Unit=oz, Yield=1. Raw pork butt → PU=lb, Yield≈0.60.</p>
       </section>
+
     </div>
 
+  <div class="results">
     <!-- Results -->
-    <section class="card" style="margin-top:16px;" aria-labelledby="results-h">
+    <section class="card" style="margin-top:16px;margin-bottom: 4em;" aria-labelledby="results-h">
       <h2 id="results-h">Results</h2>
-      <div class="row">
-        <div class="badge">Plates x Overage = <span id="effectivePlates" class="mono">220</span></div>
-      </div>
 
-      <h3 style="margin-top:12px;">Edible Needs (Mobile‑first Cards)</h3>
-      <div id="edibleCards" class="cards"></div>
+      <details class="results-group purchase">
+        <summary>Supply Order (by SKU/pack)</summary>
+        <div id="purchaseCards" class="cards" style="margin-top:8px;"></div>
+      </details>
 
-      <h3 style="margin-top:16px;">Purchase Requirements (Readable Cards)</h3>
-      <div id="purchaseCards" class="cards"></div>
+      <details class="results-group production" open>
+        <summary>Production Output (per ingredient)</summary>
+        <div id="productionCards" class="cards" style="margin-top:8px;"></div>
+      </details>
     </section>
   </div>
-    </section>
+
   </div>
-
-  <div class="sticky-footer">
-    <div class="sticky-inner">
-      <div class="footer-card">
-        <div class="row">
-          <strong>Totals:</strong>
-          <span class="badge">Grand Total: <span id="grandTotal" class="mono">$0.00</span></span>
-          <span class="badge">Cost / Plate: <span id="costPerPlate" class="mono">$0.00</span></span>
-        </div>
-        <div class="row">
-          <button id="recalc" class="btn primary" onclick="calcAll()">Recalculate</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
-
-<script>
-// Lightweight runtime error surface so we can see issues on-page
-(function(){
-  const banner = document.createElement('div');
-  banner.id = 'errBanner';
-  banner.style.cssText = 'position:fixed;inset:8px 8px auto auto;background:#ffe1e1;color:#8b0000;border:3px solid #8b0000;padding:6px 10px;border-radius:10px;z-index:9999;display:none;font-family:ui-sans-serif,system-ui;box-shadow:4px 4px 0 #00000020;';
-  banner.textContent = 'Script error';
-  document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(banner));
-  window.addEventListener('error', (e)=>{
-    banner.style.display='block';
-    banner.textContent = 'Error: ' + (e.message||'unknown');
-    console.error('Runtime error:', e);
-  });
-})();
-// ------- Utilities -------
-const byId = (id) => document.getElementById(id);
-const ozToLb = (oz) => oz/16;
-const lbToOz = (lb) => lb*16;
-
-function num(v, d=0){
-  const n = Number(v);
-  return Number.isFinite(n) ? n : d;
-}
-
-// ------- Data Model -------
-function emptyRow(){
-  return {
-    item: "",
-    ingredient: "",
-    perPlateQty: 0,
-    perPlateUnit: "oz",   // oz | lb | piece
-    yieldPerPurchaseUnit: 1, // edible per 1 purchase unit
-    purchaseUnit: "lb",   // lb | oz | piece
-    packSize: 1,           // how many purchase units per pack
-    packUnit: "lb",       // must match purchaseUnit
-    unitCost: 0,           // cost per purchase unit
-    packCost: 0,           // cost per pack
-    notes: ""
-  };;
-}
-
-let rows = [];
-
-// Example preset for your menu
-function bbqPreset(){
-  return [
-    // Beans (dry → cooked). If you purchase dry by lb and expect 2.5 lb cooked per lb dry.
-    { item:"Beans", ingredient:"Beans (dry → cooked)", perPlateQty:4, perPlateUnit:"oz", yieldPerPurchaseUnit:2.5, purchaseUnit:"lb", packSize:20, packUnit:"lb", notes:"Dry → cooked ≈2.5 lb per 1 lb dry; 20 lb bag"},
-
-    // Potato salad: prepared by the lb, 5 lb tubs
-    { item:"Potato Salad", ingredient:"Potato salad (prepared)", perPlateQty:5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"lb", packSize:5, packUnit:"lb", notes:"Prepared tubs 5 lb"},
-
-    // Mayo for potato salad: 64 oz jars, unit=oz to count exact jars
-    { item:"Potato Salad", ingredient:"Mayonnaise (64 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"oz", packSize:64, packUnit:"oz", notes:"64 oz jar"},
-
-    // Bread slices
-    { item:"Bread", ingredient:"Bread slices", perPlateQty:1, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:20, packUnit:"piece", notes:"~20 slices/loaf"},
-
-    // Pulled pork (raw pork butt → edible). Yield ~0.60 edible lb per 1 lb raw. Typical butt ≈ 8 lb.
-    { item:"Pulled Pork", ingredient:"Pork butt (raw → pulled)", perPlateQty:6, perPlateUnit:"oz", yieldPerPurchaseUnit:0.60, purchaseUnit:"lb", packSize:8, packUnit:"lb", notes:"60% yield; ~8 lb average"},
-
-    // Brownie squares, per pan
-    { item:"Dessert", ingredient:"Brownie squares", perPlateQty:1, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:12, packUnit:"piece", notes:"12 squares per pan"},
-  ];
-}
-
-// ------- DOM Row Rendering -------
-function makeRowDOM(r, index){
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input aria-label="Item" data-field="item" value="${r.item}"></td>
-    <td><input aria-label="Ingredient" data-field="ingredient" value="${r.ingredient}"></td>
-    <td><input aria-label="Per-Plate Qty" data-field="perPlateQty" type="number" min="0" step="0.01" value="${r.perPlateQty}"></td>
-    <td>
-      <select aria-label="Per-Plate Unit" data-field="perPlateUnit">
-        <option value="oz" ${r.perPlateUnit==="oz"?"selected":""}>oz</option>
-        <option value="lb" ${r.perPlateUnit==="lb"?"selected":""}>lb</option>
-        <option value="piece" ${r.perPlateUnit==="piece"?"selected":""}>piece</option>
-      </select>
-    </td>
-    <td><input aria-label="Yield per purchase unit" data-field="yieldPerPurchaseUnit" type="number" min="0" step="0.01" value="${r.yieldPerPurchaseUnit}"></td>
-    <td>
-      <select aria-label="Purchase Unit" data-field="purchaseUnit">
-        <option value="lb" ${r.purchaseUnit==="lb"?"selected":""}>lb</option>
-        <option value="oz" ${r.purchaseUnit==="oz"?"selected":""}>oz</option>
-        <option value="piece" ${r.purchaseUnit==="piece"?"selected":""}>piece</option>
-      </select>
-    </td>
-    <td><input aria-label="Pack Size" data-field="packSize" type="number" min="0" step="0.01" value="${r.packSize}"></td>
-    <td>
-      <select aria-label="Pack Unit" data-field="packUnit">
-        <option value="lb" ${r.packUnit==="lb"?"selected":""}>lb</option>
-        <option value="oz" ${r.packUnit==="oz"?"selected":""}>oz</option>
-        <option value="piece" ${r.packUnit==="piece"?"selected":""}>piece</option>
-      </select>
-    </td>
-    <td><input aria-label="Unit Cost" data-field="unitCost" type="number" min="0" step="0.01" value="${r.unitCost??0}"></td>
-    <td><input aria-label="Pack Cost" data-field="packCost" type="number" min="0" step="0.01" value="${r.packCost??0}"></td>
-    <td><input aria-label="Notes" data-field="notes" value="${r.notes||""}"></td>
-    <td><button class="btn line del">✕</button></td>
-  `;
-
-  // Generic data binding via data-field
-  tr.querySelectorAll('[data-field]').forEach(el => {
-    el.addEventListener('input', e => {
-      const field = e.target.getAttribute('data-field');
-      let val = e.target.value;
-      if(["perPlateQty","yieldPerPurchaseUnit","packSize","unitCost","packCost"].includes(field)){
-        val = num(val, 0);
-      }
-      rows[index][field] = (field.endsWith('Unit') && e.target.tagName==='SELECT') ? val : val;
-      dirtyCalc();
-    });
-    el.addEventListener('change', e => {
-      const field = e.target.getAttribute('data-field');
-      let val = e.target.value;
-      if(["perPlateUnit","purchaseUnit","packUnit"].includes(field)){
-        rows[index][field] = val;
-      }
-      dirtyCalc();
-    });
-  });
-
-  tr.querySelector('.del').addEventListener('click', () => {
-    rows.splice(index,1);
-    renderTable();
-    calcAll();
-  });
-
-  return tr;
-}
-
-function renderTable(){
-  const tbody = byId('tbody');
-  tbody.innerHTML = '';
-  rows.forEach((r, i) => tbody.appendChild(makeRowDOM(r, i)));
-}
-
-// ------- Calculations -------
-function effectivePlates(){
-  const plates = num(byId('plates').value, 0);
-  const ov = num(byId('overage').value, 0);
-  return Math.ceil(plates * (1 + ov/100));
-}
-
-function perPlateEdibleToOz(qty, unit){
-  if(unit === 'oz') return qty;
-  if(unit === 'lb') return lbToOz(qty);
-  if(unit === 'piece') return 0; // pieces handled separately
-  return 0;
-}
-
-function perPlatePieces(qty, unit){
-  return unit === 'piece' ? qty : 0;
-}
-
-function summarizeEdible(){
-  // Returns array of { item, ingredient, edibleOz, edibleLb, pieces }
-  const eff = effectivePlates();
-  return rows.map(r => {
-    const edibleOzPerPlate = perPlateEdibleToOz(r.perPlateQty, r.perPlateUnit);
-    const ediblePiecesPerPlate = perPlatePieces(r.perPlateQty, r.perPlateUnit);
-    const edibleOz = edibleOzPerPlate * eff;
-    const pieces = ediblePiecesPerPlate * eff;
-    const edibleLb = ozToLb(edibleOz);
-    return { item:r.item, ingredient:r.ingredient, edibleOz, edibleLb, pieces };
-  });
-}
-
-function purchaseForRow(r, edible){
-  // Determine purchase qty in purchase units, then packs
-  // edible: {edibleOz, edibleLb, pieces}
-  // r.purchaseUnit: lb/oz/piece; r.yieldPerPurchaseUnit: edible per 1 purchase unit
-  let edibleInPurchaseUnit = 0;
-  if(r.purchaseUnit === 'lb') edibleInPurchaseUnit = edible.edibleLb;
-  else if(r.purchaseUnit === 'oz') edibleInPurchaseUnit = edible.edibleOz;
-  else if(r.purchaseUnit === 'piece') edibleInPurchaseUnit = edible.pieces;
-
-  let purchaseQty = 0;
-  if(r.yieldPerPurchaseUnit > 0){
-    purchaseQty = edibleInPurchaseUnit / r.yieldPerPurchaseUnit;
-  }
-  const packs = (r.packSize && r.packSize > 0) ? Math.ceil(purchaseQty / r.packSize) : 0;
-  return { purchaseQty, packs };
-}
-
-function calcAll(){
-  // Effective plates indicator
-  byId('effectivePlates').textContent = effectivePlates();
-
-  // Edible table
-  // Render Edible cards
-  const edibleWrap = byId('edibleCards');
-  edibleWrap.innerHTML = '';
-  const edibleRows = summarizeEdible();
-  edibleRows.forEach((e, idx) => {
-    const r = rows[idx];
-    const showPieces = e.pieces > 0;
-    const row = document.createElement('div');
-    row.className = 'card-row';
-    row.innerHTML = `
-      <h4>${r.item ? `${r.item} – ` : ''}${r.ingredient||''}</h4>
-      <div class="kv">
-        <div class="kv-row"><div class="k">Per‑plate</div><div class="v">${r.perPlateQty} ${r.perPlateUnit}</div></div>
-        <div class="kv-row"><div class="k">Effective Plates</div><div class="v">${effectivePlates()}</div></div>
-        <div class="kv-row"><div class="k">Total Edible (oz)</div><div class="v">${e.edibleOz.toFixed(2)}</div></div>
-        <div class="kv-row"><div class="k">Total Edible (lb)</div><div class="v">${e.edibleLb.toFixed(2)}</div></div>
-        ${showPieces ? `<div class="kv-row"><div class="k">Total Pieces</div><div class="v">${e.pieces}</div></div>` : ''}
-      </div>
-    `;
-    edibleWrap.appendChild(row);
-  });
-
-  // Render Purchase cards + totals
-  const purchaseWrap = byId('purchaseCards');
-  purchaseWrap.innerHTML = '';
-  let grandTotal = 0;
-  const eff = effectivePlates();
-  edibleRows.forEach((e, idx) => {
-    const r = rows[idx];
-    const { purchaseQty, packs } = purchaseForRow(r, e);
-    const packCost = num(r.packCost, 0);
-    const unitCost = num(r.unitCost, 0);
-    const totalCost = packCost > 0 ? (packs * packCost) : (unitCost > 0 ? (purchaseQty * unitCost) : 0);
-    grandTotal += totalCost;
-
-    const row = document.createElement('div');
-    row.className = 'card-row';
-    row.innerHTML = `
-      <h4>${r.ingredient||''} <span class="pill">${r.packSize} ${r.packUnit} / pack</span></h4>
-      <div class="kv">
-        <div class="kv-row"><div class="k">Purchase Unit</div><div class="v">${r.purchaseUnit}</div></div>
-        <div class="kv-row"><div class="k">Qty to Buy</div><div class="v">${purchaseQty.toFixed(2)} ${r.purchaseUnit}</div></div>
-        <div class="kv-row"><div class="k">Packs (ceil)</div><div class="v">${packs}</div></div>
-        ${unitCost>0?`<div class="kv-row"><div class="k">Unit Cost</div><div class="v">$${unitCost.toFixed(2)} / ${r.purchaseUnit}</div></div>`:''}
-        ${packCost>0?`<div class="kv-row"><div class="k">Pack Cost</div><div class="v">$${packCost.toFixed(2)} / pack</div></div>`:''}
-        <div class="kv-row"><div class="k">Total Cost</div><div class="v">$${totalCost.toFixed(2)}</div></div>
-        ${r.notes?`<div class="kv-row"><div class="k">Notes</div><div class="v">${r.notes}</div></div>`:''}
-      </div>
-    `;
-    purchaseWrap.appendChild(row);
-  });
-  byId('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
-  const cpp = (grandTotal>0 && eff>0) ? grandTotal/eff : 0;
-  byId('costPerPlate').textContent = `$${cpp.toFixed(2)}`;
-}
-
-function dirtyCalc(){
-  // Debounce-ish simple recalc
-  window.clearTimeout(dirtyCalc._t);
-  dirtyCalc._t = window.setTimeout(calcAll, 60);
-}
-
-// ------- Import / Export -------
-function exportJSON(){
-  const data = {
-    plates: num(byId('plates').value, 0),
-    overage: num(byId('overage').value, 0),
-    rows
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'plate_sale_recipe.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-async function importJSON(file){
-  const text = await file.text();
-  const data = JSON.parse(text);
-  byId('plates').value = num(data.plates, 0);
-  byId('overage').value = num(data.overage, 0);
-  rows = Array.isArray(data.rows) ? data.rows : [];
-  renderTable();
-  calcAll();
-}
-
-// ------- Wire UI -------
-function wireUI(){
-  const safe = (id, ev, fn)=>{ const el = byId(id); if(!el){ console.warn('Missing element #'+id); return; } el.addEventListener(ev, fn); };
-  safe('addRow','click', () => { rows.push(emptyRow()); renderTable(); calcAll(); });
-  safe('recalc','click', calcAll);
-  safe('plates','input', dirtyCalc);
-  safe('overage','input', dirtyCalc);
-  safe('exportJson','click', exportJSON);
-  safe('importJson','click', () => {
-    const f = byId('importFile')?.files?.[0];
-    if(!f){ alert('Choose a JSON file to import.'); return; }
-    importJSON(f);
-  });
-  safe('loadDefaults','click', () => { rows = bbqPreset(); renderTable(); calcAll(); });
-  safe('clearAll','click', () => { rows = []; renderTable(); calcAll(); });
-  // Modal
-  safe('calcFab','click', openCalcModal);
-  safe('calcClose','click', closeCalcModal);
-}
-
-// Fallback global onclick handlers (in case event listeners are blocked in some envs)
-function btnLoadDefaults(){ rows = bbqPreset(); renderTable(); calcAll(); }
-function btnClearAll(){ rows = []; renderTable(); calcAll(); }
-function btnAddRow(){ rows.push(emptyRow()); renderTable(); calcAll(); }
-function btnImport(){ const f = byId('importFile')?.files?.[0]; if(!f){ alert('Choose a JSON file to import.'); return; } importJSON(f); }
-
-// Modal open/close
-function openCalcModal(){
-  const m = byId('calcModal');
-  const f = byId('calcFrame');
-  if(f && (!f.src || f.src === 'about:blank')){ f.src = 'calculator.html'; }
-  m.classList.add('open');
-  m.classList.remove('minimized');
-  m.setAttribute('aria-hidden','false');
-  updateMinButton();
-}
-function closeCalcModal(){
-  const m = byId('calcModal');
-  m.classList.remove('open');
-  m.classList.remove('minimized');
-  m.setAttribute('aria-hidden','true');
-  updateMinButton();
-}
-function minimizeCalcModal(){
-  const m = byId('calcModal');
-  if(!m.classList.contains('open')) openCalcModal();
-  m.classList.add('minimized');
-  updateMinButton();
-}
-function restoreCalcModal(){
-  const m = byId('calcModal');
-  m.classList.remove('minimized');
-  updateMinButton();
-}
-function toggleMinimizeCalcModal(){
-  const m = byId('calcModal');
-  if(m.classList.contains('minimized')) restoreCalcModal(); else minimizeCalcModal();
-}
-function updateMinButton(){
-  const m = byId('calcModal');
-  const b = byId('calcMin');
-  if(!b) return;
-  b.textContent = m.classList.contains('minimized') ? '⬜' : '–';
-  b.title = m.classList.contains('minimized') ? 'Restore' : 'Minimize';
-}
-
-// Initialize after DOM is ready
-function init(){
-  rows = bbqPreset();
-  renderTable();
-  calcAll();
-  wireUI();
-  // Modal keyboard close
-  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeCalcModal(); });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
-</script>
-  
-  <!-- Floating Calculator Button & Modal -->
-  <button id="calcFab" class="fab" title="Open calculator" aria-label="Open calculator" onclick="openCalcModal()">🧮</button>
-  <div id="calcModal" class="modal" aria-hidden="true" role="dialog" aria-label="Calculator">
-    <div class="modal-backdrop" onclick="closeCalcModal()"></div>
+  <!-- Ingredient Modal -->
+  <div id="ingModal" class="modal" aria-hidden="true" role="dialog" aria-label="Add / Edit Ingredient">
+    <div class="modal-backdrop"></div>
     <div class="modal-dialog">
-      <div class="modal-titlebar" ondblclick="restoreCalcModal()">
-        <span class="title"><strong>Calculator</strong></span>
+      <div class="modal-titlebar">
+        <span id="ingTitle"><strong>Add / Edit Ingredient</strong></span>
         <div class="actions">
-          <button id="calcMin" class="btn line" aria-label="Minimize calculator" title="Minimize" onclick="toggleMinimizeCalcModal()">–</button>
-          <button id="calcClose" class="btn line" aria-label="Close calculator" onclick="closeCalcModal()">✕</button>
+          <button class="btn line" id="ingClose">✕</button>
         </div>
       </div>
       <div class="modal-body">
-        <iframe id="calcFrame" src="about:blank" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        <form id="ingForm">
+          <div class="form-grid">
+            <label class="full">Item/Category
+              <input class="formfield" id="f_item" type="text" />
+            </label>
+              <small class="help">Groups multiple ingredients under the same item.</small><br>
+            <label class="full">Ingredient
+              <input class="formfield" id="f_ingredient" type="text" />
+            </label>
+              <small class="help">Actual product you buy or use.</small><br>
+            <label class="full">Per‑Plate Qty
+              <input class="formfield" id="f_ppqty" type="number" step="0.01" min="0" />
+            </label>
+              <small class="help">Amount given to one customer.</small><br>
+            <label class="full">Per‑Plate Unit
+              <select class="formfield" id="f_ppunit">
+                <option value="oz">oz</option>
+                <option value="lb">lb</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+              <small class="help">Unit of measurement used per plate.</small><br>
+            <label class="full">Yield per Purchase Unit
+              <input class="formfield" id="f_yield" type="number" step="0.01" min="0" />
+            </label>
+              <small class="help">Portion of usable product after loss.</small><br>
+            <label class="full">Purchase Unit
+              <select class="formfield" id="f_pu">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+              <small class="help">How the ingredient is measured when purchasing.</small><br>
+            <label class="full">Pack Size
+              <input class="formfield" id="f_packsize" type="number" step="0.01" min="0" />
+            </label>
+              <small class="help">How much you get when buying one pack.</small><br>
+            <label class="full">Pack Unit
+              <select class="formfield" id="f_packunit">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+              <small class="help">Must match how pack size is measured.</small><br>
+            <label class="full">Unit Cost
+              <input class="formfield" id="f_unitcost" type="number" step="0.01" min="0" />
+            </label>
+              <small class="help">Price per purchase unit (ex: $0.89 per lb).</small><br>
+            <label class="full">Pack Cost
+              <input class="formfield" id="f_packcost" type="number" step="0.01" min="0" />
+            </label>
+              <small class="help">Total cost for one pack. Use this OR unit cost below, not both.</small><br>
+            <label class="full" class="full">Notes
+            </label>
+            <textarea class="formfield" id="f_notes" type="text" style="width:90%; height:4.1em; text-align:left;"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-titlebar" style="border-top:3px solid var(--line); border-bottom:0; background:#fff;">
+        <div class="grow"></div>
+        <div class="actions">
+          <button class="btn line" id="ingCancel">Cancel</button>
+          <button class="btn primary" id="ingSave">Save</button>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Calculator Modal -->
+  <div id="calcModal" class="modal" aria-hidden="true" role="dialog" aria-label="Calculator">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" style="width:min(500px,92vw);height:90%;">
+      <div class="modal-titlebar">
+        <span><strong>Calculator</strong></span>
+        <div class="actions">
+          <button class="btn line" id="calcClose">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" style="height:520px;">
+        <iframe id="calcFrame" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Error banner
+  (function(){
+    const b = document.getElementById('errBanner');
+    window.addEventListener('error', e => { b.style.display='block'; b.textContent = 'Error: ' + (e.message||'unknown'); console.error(e); });
+  })();
+
+  // --- Utilities ---
+  const byId = (id) => document.getElementById(id);
+  const ozToLb = (oz) => oz/16; const lbToOz = (lb) => lb*16;
+  const num = (v,d=0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
+
+  // --- Data Model ---
+  function emptyRow(){
+    return { item:"", ingredient:"", perPlateQty:0, perPlateUnit:"oz", yieldPerPurchaseUnit:1, purchaseUnit:"lb", packSize:1, packUnit:"lb", unitCost:0, packCost:0, notes:"" };
+  }
+  let rows = [];
+  function bbqPreset(){
+    return [
+      { item:"Pulled Pork", ingredient:"Pork shoulder/butt", perPlateQty:6, perPlateUnit:"oz", yieldPerPurchaseUnit:0.60, purchaseUnit:"lb", packSize:7, packUnit:"lb", unitCost:1, packCost:0, notes:"60% yield; ~7 lb average"},
+      { item:"Beans", ingredient:"Canned beans", perPlateQty:4.0, perPlateUnit:"oz", yieldPerPurchaseUnit:2.5, purchaseUnit:"lb", packSize:20, packUnit:"lb", unitCost:1, packCost:0, notes:"Bushes baked beans, 100oz can"},
+      { item:"Beans", ingredient:"Ground sausage", perPlateQty:3.0, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"lb", packSize:3, packUnit:"lb", unitCost:5, packCost:0, notes:"Great Value, 3lb rolls"},
+      { item:"Beans", ingredient:"Brown sugar", perPlateQty:1.0, perPlateUnit:"oz", yieldPerPurchaseUnit:0.5, purchaseUnit:"lb", packSize:2, packUnit:"lb", unitCost:3, packCost:0, notes:"Light brown sugar, any brand"},
+      { item:"Beans", ingredient:"Barbeque sauce", perPlateQty:4.0, perPlateUnit:"oz", yieldPerPurchaseUnit:2.5, purchaseUnit:"lb", packSize:20, packUnit:"lb", unitCost:1, packCost:0, notes:"Sweet Baby Rays, 32oz bottle, case of 4 from Sam's Club"},
+      { item:"Potato Salad", ingredient:"Potatoes", perPlateQty:5.0, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"lb", packSize:10, packUnit:"lb", unitCost:0, packCost:5, notes:"Prepared tubs 5 lb"},
+      { item:"Potato Salad", ingredient:"Mayonnaise (64 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"oz", packSize:64, packUnit:"oz", unitCost:0, packCost:0, notes:"Duke's, 64 oz jar"},
+      { item:"Potato Salad", ingredient:"Mustard (64 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"oz", packSize:64, packUnit:"oz", unitCost:1, packCost:8.5, notes:"Yellow mustard, 64 oz jar"},
+      { item:"Potato Salad", ingredient:"Eggs", perPlateQty:0.5, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:300, packUnit:"piece", unitCost:0, packCost:60, notes:"300 count crate/box from Sam's Club"},
+      { item:"Potato Salad", ingredient:"Pickles (128 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:100, purchaseUnit:"oz", packSize:128, packUnit:"oz", unitCost:0, packCost:10, notes:"128 oz jar"},
+      { item:"Bread", ingredient:"Bread slices", perPlateQty:1.0, perPlateUnit:"piece", yieldPerPurchaseUnit:20.0, purchaseUnit:"piece", packSize:20, packUnit:"piece", unitCost:0, packCost:2, notes:"~20 slices/loaf, white bread"},
+      { item:"Dessert", ingredient:"Brownie mix", perPlateQty:1.0, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:12, packUnit:"piece", unitCost:0, packCost:1, notes:"12 squares per pan, Duncan Hines mix"},
+      { item:"Dessert", ingredient:"Eggs", perPlateQty:0.2, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:300, packUnit:"piece", unitCost:0, packCost:60, notes:"300 count crate/box from Sam's Club"},
+      { item:"Dessert", ingredient:"Oil", perPlateQty:1.0, perPlateUnit:"oz", yieldPerPurchaseUnit:100.0, purchaseUnit:"oz", packSize:24, packUnit:"oz", unitCost:0, packCost:4, notes:"Vegetable oil, Great Value"}
+    ];
+  }
+
+  // --- Hidden table rendering (kept minimal) ---
+  function makeRowDOM(r, index){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input data-field="item" value="${r.item}"></td>
+      <td><input data-field="ingredient" value="${r.ingredient}"></td>
+      <td><input data-field="perPlateQty" type="number" min="0" step="0.01" value="${r.perPlateQty}"></td>
+      <td>
+        <select data-field="perPlateUnit">
+          <option value="oz" ${r.perPlateUnit==='oz'?"selected":""}>oz</option>
+          <option value="lb" ${r.perPlateUnit==='lb'?"selected":""}>lb</option>
+          <option value="piece" ${r.perPlateUnit==='piece'?"selected":""}>piece</option>
+        </select>
+      </td>
+      <td><input data-field="yieldPerPurchaseUnit" type="number" min="0" step="0.01" value="${r.yieldPerPurchaseUnit}"></td>
+      <td>
+        <select data-field="purchaseUnit">
+          <option value="lb" ${r.purchaseUnit==='lb'?"selected":""}>lb</option>
+          <option value="oz" ${r.purchaseUnit==='oz'?"selected":""}>oz</option>
+          <option value="piece" ${r.purchaseUnit==='piece'?"selected":""}>piece</option>
+        </select>
+      </td>
+      <td><input data-field="packSize" type="number" min="0" step="0.01" value="${r.packSize}"></td>
+      <td>
+        <select data-field="packUnit">
+          <option value="lb" ${r.packUnit==='lb'?"selected":""}>lb</option>
+          <option value="oz" ${r.packUnit==='oz'?"selected":""}>oz</option>
+          <option value="piece" ${r.packUnit==='piece'?"selected":""}>piece</option>
+        </select>
+      </td>
+      <td><input data-field="unitCost" type="number" min="0" step="0.01" value="${r.unitCost??0}"></td>
+      <td><input data-field="packCost" type="number" min="0" step="0.01" value="${r.packCost??0}"></td>
+      <td><input data-field="notes" value="${r.notes||''}"></td>
+      <td><button class="btn warn del">✕</button></td>`;
+
+    tr.querySelectorAll('[data-field]').forEach(el=>{
+      el.addEventListener('input', e=>{
+        const f = e.target.getAttribute('data-field');
+        let v = e.target.value;
+        if(['perPlateQty','yieldPerPurchaseUnit','packSize','unitCost','packCost'].includes(f)) v = num(v,0);
+        rows[index][f] = v;
+        dirtyCalc();
+      });
+    });
+    tr.querySelector('.del').addEventListener('click', ()=>{ rows.splice(index,1); renderTable(); calcAll(); });
+    return tr;
+  }
+  function renderTable(){ const tb = byId('tbody'); if(!tb) return; tb.innerHTML=''; rows.forEach((r,i)=>tb.appendChild(makeRowDOM(r,i))); }
+
+  // --- Calculations & Cards ---
+  let editingIndex = null;
+  function effectivePlates(){ const plates=num(byId('plates').value,0); const ov=num(byId('overage').value,0); return Math.ceil(plates*(1+ov/100)); }
+  function perPlateproductionToOz(qty,unit){ if(unit==='oz') return qty; if(unit==='lb') return lbToOz(qty); return 0; }
+  function perPlatePieces(qty,unit){ return unit==='piece'?qty:0; }
+
+  function summarizeproduction(){
+    const eff = effectivePlates();
+    return rows.map(r=>{
+      const productionOzPerPlate = perPlateproductionToOz(r.perPlateQty,r.perPlateUnit);
+      const productionPiecesPerPlate = perPlatePieces(r.perPlateQty,r.perPlateUnit);
+      const productionOz = productionOzPerPlate*eff; const pieces = productionPiecesPerPlate*eff; const productionLb = ozToLb(productionOz);
+      return { item:r.item, ingredient:r.ingredient, productionOz, productionLb, pieces, eff };
+    });
+  } 
+
+  function purchaseForRow(r, production){
+    let productionInPurchaseUnit = 0;
+    if(r.purchaseUnit==='lb') productionInPurchaseUnit = production.productionLb;
+    else if(r.purchaseUnit==='oz') productionInPurchaseUnit = production.productionOz;
+    else if(r.purchaseUnit==='piece') productionInPurchaseUnit = production.pieces;
+    const purchaseQty = (r.yieldPerPurchaseUnit>0) ? (productionInPurchaseUnit / r.yieldPerPurchaseUnit) : 0;
+    const packs = (r.packSize && r.packSize>0) ? Math.ceil(purchaseQty / r.packSize) : 0;
+    return { purchaseQty, packs };
+  }
+
+  function calcAll(){
+    const eff = effectivePlates();
+    byId('effectivePlates').textContent = eff;
+    
+    const productionWrap = byId('productionCards'); productionWrap.innerHTML='';
+    const productionRows = summarizeproduction();
+    productionRows.forEach((e,idx)=>{
+      const r = rows[idx]; if(!r) return;
+      const showPieces = e.pieces>0; const row = document.createElement('div'); row.className='card-row';
+      row.innerHTML = `
+        <h4>${r.item?`${r.item} – `:''}${r.ingredient||''}</h4>
+        <div class="kv">
+          <div class="kv-row"><div class="k">Per‑plate</div><div class="v">${r.perPlateQty} ${r.perPlateUnit}</div></div>
+          <div class="kv-row"><div class="k">Effective Plates</div><div class="v">${effectivePlates()}</div></div>
+          <div class="kv-row"><div class="k">Total production (oz)</div><div class="v">${e.productionOz.toFixed(2)}</div></div>
+          <div class="kv-row"><div class="k">Total production (lb)</div><div class="v">${e.productionLb.toFixed(2)}</div></div>
+          ${showPieces?`<div class="kv-row"><div class="k">Total Pieces</div><div class="v">${e.pieces}</div></div>`:''}
+        </div>`;
+      productionWrap.appendChild(row);
+    });
+
+    const purchaseWrap = byId('purchaseCards'); purchaseWrap.innerHTML='';
+    let grandTotal = 0; 
+    productionRows.forEach((e,idx)=>{
+      const r = rows[idx]; if(!r) return; const {purchaseQty,packs} = purchaseForRow(r,e);
+      const packCost=num(r.packCost,0), unitCost=num(r.unitCost,0);
+      const totalCost = packCost>0 ? (packs*packCost) : (unitCost>0 ? (purchaseQty*unitCost) : 0);
+      grandTotal += totalCost;
+      const row = document.createElement('div'); row.className='card-row';
+      row.innerHTML = `
+        <h4>${r.ingredient||''} <span class="pill">${r.packSize} ${r.packUnit} / pack</span></h4>
+        <div class="kv">
+          <div class="kv-row"><div class="k">Purchase Unit</div><div class="v">${r.purchaseUnit}</div></div>
+          <div class="kv-row"><div class="k">Qty to Buy</div><div class="v">${purchaseQty.toFixed(2)} ${r.purchaseUnit}</div></div>
+          <div class="kv-row"><div class="k">Packs (ceil)</div><div class="v">${packs}</div></div>
+          ${unitCost>0?`<div class="kv-row"><div class="k">Unit Cost</div><div class="v">$${unitCost.toFixed(2)} / ${r.purchaseUnit}</div></div>`:''}
+          ${packCost>0?`<div class="kv-row"><div class="k">Pack Cost</div><div class="v">$${packCost.toFixed(2)} / pack</div></div>`:''}
+          <div class="kv-row"><div class="k">Total Cost</div><div class="v">$${totalCost.toFixed(2)}</div></div>
+          ${r.notes?`<div class="kv-row"><div class="k">Notes</div><div class="v">${r.notes}</div></div>`:''}
+        </div>`;
+      const actions = document.createElement('div'); actions.className='card-actions';
+      actions.innerHTML = `<button class="icon-btn" title="Edit">✎</button><button class="icon-btn danger" title="Delete">×</button>`;
+      actions.children[0].addEventListener('click', ()=>openIngredientModal('edit',idx));
+      actions.children[1].addEventListener('click', ()=>{ rows.splice(idx,1); renderTable(); calcAll(); });
+      row.appendChild(actions);
+      purchaseWrap.appendChild(row);
+    });
+
+    byId('grandTotal').textContent = ` \u00A0$${grandTotal.toFixed(2)}`;
+    const cpp = (grandTotal>0 && eff>0) ? grandTotal/eff : 0;
+    byId('costPerPlate').textContent = ` \u00A0$${cpp.toFixed(2)}`;
+    
+    // Update Shields.io badge dynamically
+    const badge = byId('yieldBadge');
+    if (badge) {
+      badge.src = `https://img.shields.io/badge/yield-${encodeURIComponent(eff)}-blue`;
+    }
+  }
+
+  // --- Modal helpers ---
+  function openModal(id){ const m=byId(id); if(!m) return; m.classList.add('open'); m.setAttribute('aria-hidden','false'); document.body.classList.add('no-scroll'); }
+  function closeModal(id){ const m=byId(id); if(!m) return; m.classList.remove('open'); m.setAttribute('aria-hidden','true'); document.body.classList.remove('no-scroll'); }
+
+  // Ingredient modal open/save
+  function openIngredientModal(mode='create', index=null){
+    editingIndex = (mode==='edit') ? index : null;
+    const r = (editingIndex!=null) ? rows[editingIndex] : emptyRow();
+    byId('ingTitle').innerHTML = `<strong>${editingIndex!=null?'Edit Ingredient':'Add Ingredient'}</strong>`;
+    byId('f_item').value = r.item||'';
+    byId('f_ingredient').value = r.ingredient||'';
+    byId('f_ppqty').value = r.perPlateQty||0;
+    byId('f_ppunit').value = r.perPlateUnit||'oz';
+    byId('f_yield').value = r.yieldPerPurchaseUnit||1;
+    byId('f_pu').value = r.purchaseUnit||'lb';
+    byId('f_packsize').value = r.packSize||0;
+    byId('f_packunit').value = r.packUnit||'lb';
+    byId('f_unitcost').value = r.unitCost||0;
+    byId('f_packcost').value = r.packCost||0;
+    byId('f_notes').value = r.notes||'';
+    openModal('ingModal');
+  }
+  function saveIngredientFromModal(){
+    const r = {
+      item: byId('f_item').value.trim(),
+      ingredient: byId('f_ingredient').value.trim(),
+      perPlateQty: num(byId('f_ppqty').value,0),
+      perPlateUnit: byId('f_ppunit').value,
+      yieldPerPurchaseUnit: num(byId('f_yield').value,1),
+      purchaseUnit: byId('f_pu').value,
+      packSize: num(byId('f_packsize').value,0),
+      packUnit: byId('f_packunit').value,
+      unitCost: num(byId('f_unitcost').value,0),
+      packCost: num(byId('f_packcost').value,0),
+      notes: byId('f_notes').value.trim()
+    };
+    if(editingIndex!=null) rows[editingIndex]=r; else rows.push(r);
+    closeModal('ingModal'); renderTable(); calcAll();
+  }
+
+  // Calculator modal
+  function openCalcModal(){
+    const f = byId('calcFrame'); if(f && (!f.src || f.src==='about:blank')) f.src = './calculator.html';
+    openModal('calcModal');
+  }
+
+  // --- Import/Export ---
+  function exportJSON() {
+    const data = {
+      plates: num(byId('plates').value, 0),
+      overage: num(byId('overage').value, 0),
+      rows
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'plate_sale_recipe.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Keep this: actual import logic
+  async function importJSON(file) {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    byId('plates').value = num(data.plates, 0);
+    byId('overage').value = num(data.overage, 0);
+    rows = Array.isArray(data.rows) ? data.rows : [];
+    renderTable();
+    calcAll();
+  }
+
+  // New: launches the picker, then calls importJSON()
+  function importJSONPrompt() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        await importJSON(file);
+        alert('Import successful!');
+      } catch (err) {
+        console.error(err);
+        alert('Error importing JSON: ' + (err?.message || err));
+      }
+    };
+    input.click();
+  }
+
+  // --- Wire UI ---
+  function wireUI(){
+    const on = (id,ev,fn)=>{ const el=byId(id); if(el) el.addEventListener(ev,fn); else console.warn('Missing #'+id); };
+    on('loadDefaults','click', ()=>{ rows = bbqPreset(); renderTable(); calcAll(); });
+    on('clearAll','click', ()=>{ rows = []; renderTable(); calcAll(); });
+    on('btnAddIng','click', ()=>openIngredientModal('create'));
+    on('btnCalc','click', openCalcModal);
+    on('exportJson','click', exportJSON);
+    on('importJson', 'click', importJSONPrompt);
+    on('recalc','click', calcAll);
+    on('plates','input', dirtyCalc); on('overage','input', dirtyCalc);
+    // Modal chrome
+    on('ingSave','click', saveIngredientFromModal);
+    on('ingCancel','click', ()=>closeModal('ingModal'));
+    on('ingClose','click', ()=>closeModal('ingModal'));
+    on('calcClose','click', ()=>closeModal('calcModal'));
+    byId('ingModal').addEventListener('click', (e)=>{ if(e.target.classList.contains('modal-backdrop')) closeModal('ingModal'); });
+    byId('calcModal').addEventListener('click', (e)=>{ if(e.target.classList.contains('modal-backdrop')) closeModal('calcModal'); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeModal('ingModal'); closeModal('calcModal'); }});
+  }
+
+  function dirtyCalc(){ window.clearTimeout(dirtyCalc._t); dirtyCalc._t = window.setTimeout(calcAll, 60); }
+
+  // --- Tests ---
+  function runTests(){
+    const asserts = [];
+    const ok = (name,cond) => asserts.push({name,cond});
+    // Existence
+    ok('openCalcModal exists', typeof openCalcModal==='function');
+    ok('openIngredientModal exists', typeof openIngredientModal==='function');
+    ok('#ingModal present', !!byId('ingModal'));
+    ok('#calcModal present', !!byId('calcModal'));
+    // Preset load & calc
+    rows = bbqPreset(); renderTable(); calcAll();
+    ok('rows preset length > 0', rows.length>0);
+    ok('effective plates > 0', effectivePlates()>0);
+    ok('cost / plate not NaN', !Number.isNaN(Number(byId('costPerPlate').textContent.replace(/[^0-9.]/g,''))));
+    // Modal open/close
+    openIngredientModal('create'); ok('ingModal opens', byId('ingModal').classList.contains('open')); closeModal('ingModal'); ok('ingModal closes', !byId('ingModal').classList.contains('open'));
+    openCalcModal(); ok('calcModal opens', byId('calcModal').classList.contains('open')); closeModal('calcModal'); ok('calcModal closes', !byId('calcModal').classList.contains('open'));
+    // Report
+    const failed = asserts.filter(a=>!a.cond);
+    if(failed.length){ alert('Tests failed:\n'+failed.map(f=>'- '+f.name).join('\n')); } else { alert('All tests passed ('+asserts.length+')'); }
+  }
+
+  // --- Init ---
+  function init(){ rows = bbqPreset(); renderTable(); calcAll(); wireUI(); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+  // Expose tests
+  byId('runTests').addEventListener('click', runTests);
+  </script>
 </body>
 </html>

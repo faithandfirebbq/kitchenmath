@@ -36,6 +36,7 @@
     label{ font-weight:700; }
     input, select, button, textarea{ font:inherit; color:inherit; background:#fff; border:3px solid var(--line); border-radius:10px; padding:8px 10px; outline:none; }
     input:focus, select:focus, textarea:focus{ box-shadow:4px 4px 0 var(--box-shadow); }
+    .step-input:focus {outline: 2px solid #6aa5ff;background: #f3f8ff;}
 
     .btn{ font-weight:800; border-radius:14px; cursor:pointer; box-shadow:6px 6px 0 var(--btn-shadow); background:#fff; }
     .btn:active{ transform:translate(1px,1px); box-shadow:3px 3px 0 var(--box-shadow); }
@@ -108,7 +109,13 @@
     .no-scroll{ overflow:hidden; }
     .form-grid {display: grid;}
     .full {display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;}
-    .formfield {width: 30%;text-align: end;}
+
+    /* Form fields */
+    .step-input:focus, .formfield:focus { outline:2px solid var(--accent,#6aa5ff); background:#f3f8ff; }
+    .row.active, .input-row.active, label.full.active, .full.active { background:#fffceb; border-radius:6px; }
+    .input-row { padding:.4rem .6rem; transition:background .15s ease; }
+    .formfield { width:30%; text-align:end; }
+    .formgrid .full { display:block; padding:.35rem .5rem; }
 
     /* Tiny error banner */
     #errBanner{ position:fixed; right:8px; top:8px; background:#ffe1e1; color:#8b0000; border:3px solid #8b0000; padding:6px 10px; border-radius:10px; z-index:5000; display:none; box-shadow:4px 4px 0 var(--box-shadow); }
@@ -134,11 +141,11 @@
         <h2 id="settings-h">Unit Volume</h2>
         <div class="row settings">
           <label for="plates">Units</label>
-          <input id="plates" type="number" min="1" step="1" value="10" />
+          <input class="step-input" id="plates" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="1" step="1" value="10" />
         </div>
         <div class="row settings" style="margin-top:8px;">
           <label for="overage">Overage %</label>
-          <input id="overage" type="number" min="0" step="1" value="10" />
+          <input class="step-input" id="overage" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="1" value="10" />
         </div>
         <div class="row" style="margin-top:8px;">
           <span class="mono badge" style="display:none;">Yield <span id="effectivePlates">10</span></span>
@@ -149,8 +156,7 @@
       <button id="btnCalc" class="btn line wide-btn" style="display: none;">Calculator</button>
       <!-- Calculator FAB -->
       <button id="calcFab" class="calc-fab" aria-label="Open calculator">
-        <!-- Use your file path as appropriate -->
-        <img src="./calculator.svg" alt="" />
+        <img src="/calculator/calculator.svg" alt="" />
       </button>
 
       <section class="card" aria-labelledby="settings-h">
@@ -253,15 +259,15 @@
         <form id="ingForm">
           <div class="form-grid">
             <label class="full">Item/Category
-              <input class="formfield" id="f_item" type="text" />
+              <input class="step-input formfield" id="f_item" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" />
             </label>
               <small class="help">Groups multiple ingredients under the same item.</small><br>
             <label class="full">Ingredient
-              <input class="formfield" id="f_ingredient" type="text" />
+              <input class="step-input formfield" id="f_ingredient" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" />
             </label>
               <small class="help">Actual product you buy or use.</small><br>
             <label class="full">Per‑Plate Qty
-              <input class="formfield" id="f_ppqty" type="number" step="0.01" min="0" />
+              <input class="step-input formfield" id="f_ppqty" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
             </label>
               <small class="help">Amount given to one customer.</small><br>
             <label class="full">Per‑Plate Unit
@@ -273,7 +279,7 @@
             </label>
               <small class="help">Unit of measurement used per plate.</small><br>
             <label class="full">Yield per Purchase Unit
-              <input class="formfield" id="f_yield" type="number" step="0.01" min="0" />
+              <input class="step-input formfield" id="f_yield" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
             </label>
               <small class="help">Portion of usable product after loss.</small><br>
             <label class="full">Purchase Unit
@@ -285,7 +291,7 @@
             </label>
               <small class="help">How the ingredient is measured when purchasing.</small><br>
             <label class="full">Pack Size
-              <input class="formfield" id="f_packsize" type="number" step="0.01" min="0" />
+              <input class="step-input formfield" id="f_packsize" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
             </label>
               <small class="help">How much you get when buying one pack.</small><br>
             <label class="full">Pack Unit
@@ -297,11 +303,11 @@
             </label>
               <small class="help">Must match how pack size is measured.</small><br>
             <label class="full">Unit Cost
-              <input class="formfield" id="f_unitcost" type="number" step="0.01" min="0" />
+              <input class="step-input formfield" id="f_unitcost" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
             </label>
               <small class="help">Price per purchase unit (ex: $0.89 per lb).</small><br>
             <label class="full">Pack Cost
-              <input class="formfield" id="f_packcost" type="number" step="0.01" min="0" />
+              <input class="step-input formfield" id="f_packcost" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
             </label>
               <small class="help">Total cost for one pack. Use this OR unit cost below, not both.</small><br>
             <label class="full" class="full">Notes
@@ -674,7 +680,7 @@
 
   // Calculator modal
   function openCalcModal(){
-    const f = byId('calcFrame'); if(f && (!f.src || f.src==='about:blank')) f.src = './calculator.html';
+    const f = byId('calcFrame'); if(f && (!f.src || f.src==='about:blank')) f.src = '/calculator/calculator.html';
     openModal('calcModal');
   }
 
@@ -977,6 +983,43 @@
 
   // initial list render
   renderSavedList();
+
+  // ===== Enhanced form navigation (Enter to move focus) =====
+  document.addEventListener("DOMContentLoaded", () => {
+    const sections = ["#ingForm", 'section[aria-labelledby="settings-h"]'];
+
+    sections.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+
+      const fields = Array.from(el.querySelectorAll(".step-input"))
+        .filter(f => !f.disabled && f.type !== "hidden");
+
+      el.addEventListener("keydown", e => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        const i = fields.indexOf(e.target);
+        const dir = e.shiftKey ? -1 : 1;
+        const next = fields[i + dir];
+        if (next) {
+          next.focus();
+          next.select?.();
+        }
+      });
+
+      el.addEventListener("focusin", e => {
+        if (!e.target.classList.contains("step-input")) return;
+        e.target.select?.();
+        el.querySelectorAll(".active").forEach(a => a.classList.remove("active"));
+        const row = e.target.closest(".row, label.full");
+        row?.classList.add("active");
+      });
+
+      el.addEventListener("mouseup", e => {
+        if (e.target.classList.contains("step-input")) e.preventDefault();
+      }, true);
+    });
+  });
 
   </script>
 </body>

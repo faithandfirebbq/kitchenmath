@@ -658,6 +658,8 @@
     byId('f_unitcost').value = r.unitCost||0;
     byId('f_packcost').value = r.packCost||0;
     byId('f_notes').value = r.notes||'';
+    const first = document.querySelector('#ingForm .step-input, #ingForm .formfield');
+    if (first) { first.focus(); first.select?.(); }
     openModal('ingModal');
   }
   function saveIngredientFromModal(){
@@ -992,31 +994,31 @@
       const el = document.querySelector(sel);
       if (!el) return;
 
-      const fields = Array.from(el.querySelectorAll(".step-input"))
-        .filter(f => !f.disabled && f.type !== "hidden");
+      const fields = () =>
+        Array.from(el.querySelectorAll(".step-input, .formfield"))
+          .filter(f => !f.disabled && f.type !== "hidden" && f.offsetParent !== null);
 
       el.addEventListener("keydown", e => {
         if (e.key !== "Enter") return;
+        const list = fields();
+        const i = list.indexOf(e.target);
+        if (i === -1) return;           // only intercept Enter for our fields
         e.preventDefault();
-        const i = fields.indexOf(e.target);
         const dir = e.shiftKey ? -1 : 1;
-        const next = fields[i + dir];
-        if (next) {
-          next.focus();
-          next.select?.();
-        }
+        const next = list[i + dir];
+        if (next) { next.focus(); next.select?.(); }
       });
 
       el.addEventListener("focusin", e => {
-        if (!e.target.classList.contains("step-input")) return;
+        if (!(e.target.matches(".step-input") || e.target.matches(".formfield"))) return;
         e.target.select?.();
         el.querySelectorAll(".active").forEach(a => a.classList.remove("active"));
-        const row = e.target.closest(".row, label.full");
+        const row = e.target.closest(".row, label.full, .input-row");
         row?.classList.add("active");
       });
 
       el.addEventListener("mouseup", e => {
-        if (e.target.classList.contains("step-input")) e.preventDefault();
+        if (e.target.matches(".step-input, .formfield")) e.preventDefault();
       }, true);
     });
   });

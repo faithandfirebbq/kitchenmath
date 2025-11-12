@@ -111,11 +111,11 @@
     .full {display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;}
 
     /* Form fields */
-    .step-input:focus, .formfield:focus { outline:2px solid var(--accent,#6aa5ff); background:#f3f8ff; }
-    .row.active, .input-row.active, label.full.active, .full.active { background:#fffceb; border-radius:6px; }
     .input-row { padding:.4rem .6rem; transition:background .15s ease; }
     .formfield { width:30%; text-align:end; }
     .formgrid .full { display:block; padding:.35rem .5rem; }
+    .step-input:focus, .formfield:focus { outline:0; background:#f3f8ff; box-shadow:0 0 0 2px var(--accent,#6aa5ff) inset, 0 0 0 2px var(--accent,#6aa5ff); }
+    .row.active, .input-row.active, label.full.active, .full.active { background:#fffceb; border-radius:6px; }
 
     /* Tiny error banner */
     #errBanner{ position:fixed; right:8px; top:8px; background:#ffe1e1; color:#8b0000; border:3px solid #8b0000; padding:6px 10px; border-radius:10px; z-index:5000; display:none; box-shadow:4px 4px 0 var(--box-shadow); }
@@ -1021,6 +1021,79 @@
         if (e.target.matches(".step-input, .formfield")) e.preventDefault();
       }, true);
     });
+  });
+
+  // iPhone UX fix pack: keypad + Enter-to-next + focus highlight
+  document.addEventListener('DOMContentLoaded', () => {
+    const targets = ['#ingForm', 'section[aria-labelledby="settings-h"]'];
+    const isField = el => el && el.matches('.step-input, .formfield');
+
+    const setKeypad = el => {
+      // Keep type="text" for selection; force keypad via inputmode/pattern
+      const im = (el.getAttribute('inputmode') || '').toLowerCase();
+      if (im === 'numeric') {
+        el.type = 'text';
+        el.setAttribute('inputmode', 'numeric');
+        el.setAttribute('pattern', '[0-9]*'); // iOS hint for number pad
+      } else if (im === 'decimal') {
+        el.type = 'text';
+        el.setAttribute('inputmode', 'decimal');
+        // Light decimal hint; some iOS builds still show plain keypad without this:
+        el.setAttribute('inputmode', 'decimal');
+      }
+      el.setAttribute('enterkeyhint', 'next');
+      el.setAttribute('autocomplete', el.getAttribute('autocomplete') || 'off');
+    };
+
+    const activate = (root, el) => {
+      if (!el) return;
+      el.focus({ preventScroll: false });
+      el.select?.();
+      root.querySelectorAll('.active').forEach(a => a.classList.remove('active'));
+      el.closest('.row, label.full, .input-row')?.classList.add('active');
+    };
+
+    const bind = root => {
+      if (!root) return;
+
+      const list = () =>
+        Array.from(root.querySelectorAll('.step-input, .formfield'))
+          .filter(f => !f.disabled && f.type !== 'hidden' && f.offsetParent !== null);
+
+      // Ensure keypad hints are set
+      list().forEach(setKeypad);
+
+      // Advance on Enter (support iOS variants)
+      const maybeEnter = e => {
+        const t = e.target;
+        if (!isField(t)) return;
+        const key = e.key || e.keyIdentifier || '';
+        const isEnter = key === 'Enter' || key === 'U+000A' || e.inputType === 'insertLineBreak';
+        if (!isEnter) return;
+        // In textarea, require Cmd/Ctrl+Enter to advance (plain Enter = newline)
+        if (t.tagName === 'TEXTAREA' && !(e.ctrlKey || e.metaKey)) return;
+        e.preventDefault();
+        const l = list();
+        const i = l.indexOf(t);
+        const n = l[i + (e.shiftKey ? -1 : 1)];
+        activate(root, n);
+      };
+
+      root.addEventListener('keydown', maybeEnter);   // normal case
+      root.addEventListener('keyup', maybeEnter);     // some iOS builds fire here
+      root.addEventListener('beforeinput', maybeEnter); // iOS "insertLineBreak"
+
+      root.addEventListener('focusin', e => {
+        if (isField(e.target)) activate(root, e.target);
+      });
+
+      // Keep selection when tapping inside a focused field (mobile)
+      root.addEventListener('mouseup', e => {
+        if (isField(e.target)) e.preventDefault();
+      }, true);
+    };
+
+    targets.forEach(sel => bind(document.querySelector(sel)));
   });
 
   </script>

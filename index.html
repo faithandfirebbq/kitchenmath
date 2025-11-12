@@ -244,11 +244,24 @@
           <li>Disposable serving kits available</li>
           <li>On-site pit & carving (limited dates)</li>
         </ul>
-        <a class="btn" href="#contact">Request a Quote</a>
+        <a style="display: none;" class="btn" href="#contact">Request a Quote</a>
+        <div class="card" id="contact">
+          <h2>Contact</h2>
+          <form action="https://formspree.io/f/mblzqpyn" target="_self" method="POST">
+            <label>Name<input type="text" name="name" required></label>
+            <label>Email<input type="email" name="email" required></label>
+            <label>Phone<input type="tel" name="phone"></label>
+            <label>Message<textarea name="message" rows="4" placeholder="Tell us about your order or event…" required></textarea></label>
+                <!-- This line makes the redirect work -->
+            <input type="hidden" name="_redirect" value="https://www.faithandfirebbq.com/thanks.html">
+            <button class="btn primary" type="submit">Send</button>
+          </form>
+          <p style="color:var(--muted);margin-top:8px">* Or call us @ <a href="tel:+13189876102" style="color: inherit;">(318) 987-6102</a></p>
+        </div>
       </div>
     </section>
 
-    <section id="hours" class="grid" style="margin-top:18px">
+    <section id="hours" class="grid" style="margin-top:18px; display: none;">
       <div class="card">
         <h2>Hours</h2>
         <table class="hours" aria-label="Hours">
@@ -261,19 +274,6 @@
         <h2>Location</h2>
         <p>4729 Bellevue Rd, Haughton, LA 71037</p>
         <p><a class="btn" href="https://maps.google.com/?q=123%20Oak%20St%20Yourtown%20LA%2071111" target="_blank" rel="noopener">Open in Maps</a></p>
-      </div>
-      <div class="card" id="contact">
-        <h2>Contact</h2>
-        <form action="https://formspree.io/f/mblzqpyn" target="_self" method="POST">
-          <label>Name<input type="text" name="name" required></label>
-          <label>Email<input type="email" name="email" required></label>
-          <label>Phone<input type="tel" name="phone"></label>
-          <label>Message<textarea name="message" rows="4" placeholder="Tell us about your order or event…" required></textarea></label>
-              <!-- This line makes the redirect work -->
-          <input type="hidden" name="_redirect" value="https://www.faithandfirebbq.com/thanks.html">
-          <button class="btn primary" type="submit">Send</button>
-        </form>
-        <p style="color:var(--muted);margin-top:8px">* Or call us @ <a href="tel:+13189876102" style="color: inherit;">(318) 987-6102</a></p>
       </div>
     </section>
 

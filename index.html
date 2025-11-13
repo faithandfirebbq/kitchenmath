@@ -1,328 +1,1101 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />                                                      <!-- Sets the document's character encoding to UTF-8, ensuring proper display of all text symbols -->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />        <!-- Ensures the page scales properly on mobile devices; controls viewport width and zoom behavior -->
-    <title>Faith and Fire BBQ — Fueled by Faith, Flavored by Fire</title>         <!-- Title shown in browser tabs, search results, and link previews -->
-    <meta name="description" content="Authentic Texas-style barbecue. Brisket, ribs, pulled pork, and sides. Food truck, takeout, and catering."/>  <!-- Primary meta description for search engines; appears under the title in search results -->
-    <link rel="canonical" href="https://www.faithandfirebbq.com/" />                  <!-- Canonical URL to prevent duplicate-page issues and signal the preferred version of the site -->
-    <meta name="theme-color" content="#8b2e1a" />                                 <!-- Defines the browser toolbar color on mobile devices; helps visually brand the site -->
-
-    <!-- ─────────────── Open Graph metadata for social sharing (Facebook, LinkedIn, etc.) ─────────────── -->
-    <meta property="og:type" content="restaurant" />                              <!-- Specifies the content type; 'restaurant' helps platforms categorize it correctly -->
-    <meta property="og:site_name" content="Faith & Fire BBQ" />                   <!-- The human-readable name of your site or business for social cards -->
-    <meta property="og:locale" content="en_US" />                                 <!-- Language and region code; helps platforms display localized versions -->
-    <meta property="og:title" content="Faith and Fire BBQ" />                     <!-- Title text shown when the page is shared on social networks -->
-    <meta property="og:description" content="Authentic Texas-style barbecue. Brisket, ribs, pulled pork, and sides. Food truck, takeout, and catering." />  <!-- Short description that accompanies shared links -->
-    <meta property="og:url" content="https://www.faithandfirebbq.com/" />             <!-- Canonical page URL for Open Graph previews -->
-    <meta property="og:image" content="https://www.faithandfirebbq.com/og-image.jpg" /> <!-- Image displayed in link previews; should be full URL and 1200×630 px -->
-    <meta property="og:image:width" content="1200" />                             <!-- Explicitly declares image dimensions to improve load behavior -->
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Sliced brisket with bark from Faith & Fire BBQ" />  <!-- Alt text for accessibility and better context if image fails to load -->
-
-    <!-- ─────────────── Twitter Card metadata (controls appearance when shared on Twitter/X) ─────────────── -->
-    <meta name="twitter:card" content="summary_large_image" />                    <!-- Defines the card layout; 'summary_large_image' uses a wide preview format -->
-    <meta name="twitter:title" content="Faith and Fire BBQ — Haughton, LA" />     <!-- Title displayed in the Twitter card -->
-    <meta name="twitter:description" content="Real wood-smoked barbecue, made fresh daily. Catering, plates, and bulk meats." />  <!-- Description shown below the title in the card -->
-    <meta name="twitter:image" content="https://www.faithandfirebbq.com/og-image.jpg" />  <!-- Image used for the Twitter card; ideally matches the Open Graph image -->
-    <!-- <meta name="twitter:site" content="@YourHandle"> -->                     <!-- Optional: adds your Twitter handle for attribution after you create an account -->
-
-    <!-- ─────────────── Google Fonts preconnect and stylesheet ─────────────── -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">                   <!-- Establishes early connection to Google's font server for faster load -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>          <!-- Establishes connection to font assets domain; crossorigin allows proper CORS handling -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">  <!-- Imports the Inter font family with specific font weights -->
-
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bulk Food Prep Calc</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/android-chrome-512x512.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <style>
     :root{
-      --bg:#0f0f0f;--card:#161616;--text:#f5f5f5;--muted:#bdbdbd;--brand:#af2f00;--mood:#f87140;--accent:#ffd166;--ok:#2ecc71;
+      --bg:#fffef9; --ink:#111; --muted:#6b7280; --accent:#ffcc00; --accent-2:#b6f0ff; --line:#111; --warn:#ef4444; --box-shadow: #00000015; --btn-shadow: #00000031;
+      --radius:14px;
     }
-    *{box-sizing:border-box}html,body{margin:0;padding:0}
-    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-    .container{max-width:1100px;margin:0 auto;padding:24px}
-    header{position:sticky;top:0;background:rgba(15,15,15,.8);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid #222;z-index:10}
-    nav{display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px}
-    .brand-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--accent));display:inline-grid;place-items:center;color:#111;font-weight:800}
-    .nav-links a{color:var(--text);text-decoration:none;margin-left:18px;opacity:.9}
-    .hero{display:grid;gap:18px;padding:64px 0}
-    .hero h1{font-size:clamp(36px,6vw,60px);line-height:1.1;margin:0}
-    .hero p{color:var(--muted);max-width:62ch}
+    html, body { height:100%; }
+    body{ margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--ink); line-height:1.35; }
+    .wrap{ max-width:1200px; margin:auto; padding:0 16px; width: fit-content;}
+    h1,h2{ margin:0 0 8px; }
+    h1{ font-size:clamp(1.4rem,1.1rem+1.2vw,2rem); }
+    h2{ font-size:clamp(1.1rem,1rem+.8vw,1.4rem); }
+    p{ margin:.25rem 0 .75rem; color:var(--muted); }
 
-    .cta {
-      display: grid;
-      gap: 12px;
-    }
+    /* Cards */
+    .card{ background:#fff; border:3px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:6px 6px 0 var(--box-shadow); width: -webkit-fill-available ;max-width: 600px;}
+    .grid{ display:flex; gap:16px; flex-wrap: wrap; justify-content: center;}
+    @media (min-width:900px){ .grid.cols-2{ grid-template-columns:1fr; justify-items: center;} }
+    #plates, #overage {text-align: right; max-width: 45%;}
+    label {text-align: left;}
 
-    @media (min-width: 600px) {
-      .cta {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        justify-content: center;
-      }
-    }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .grow{ flex:1 1 auto; display: flex; gap: 0.5em}
 
-    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;border:1px solid #676767;background:#1b1b1b;color:#fff;text-decoration:none;font-weight:600;font-size:large;}
-    .btn.primary{background:linear-gradient(2deg,var(--brand),var(--mood));color:#111;border:none}
-    .grid{display:grid;gap:18px}
-    @media(min-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
-    .card{background:var(--card);border:1px solid #242424;border-radius:18px;padding:18px}
-    .card h3{margin:0 0 6px 0}
-    .menu{display:grid;gap:12px}
-    .menu-item{display:flex;justify-content:space-between;align-items:baseline;padding:12px 14px;border-radius:12px;background:#141414;border:1px solid #242424}
-    .price{color:var(--accent);font-weight:700}
-    .two-col{display:grid;gap:18px}
-    @media(min-width:900px){.two-col{grid-template-columns:1.1fr .9fr}}
-    footer{border-top:1px solid #222;margin-top:48px;padding:24px 0;color:#a9a9a9;font-size:14px}
-    .hours td{padding:4px 8px}
-    .badge{font-size:12px;color:#111;background:var(--accent);padding:2px 8px;border-radius:999px;font-weight:700}
-    .notice{background:#101010;border:1px dashed #303030;border-radius:14px;padding:12px;color:#cfcfcf}
-    form{display:grid;gap:10px}
-    input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2a2a2a;background:#121212;color:#fff}
-    label{font-size:14px;color:var(--muted)}
+    label{ font-weight:700; }
+    input, select, button, textarea{ font:inherit; color:inherit; background:#fff; border:3px solid var(--line); border-radius:10px; padding:8px 10px; outline:none; }
+    input:focus, select:focus, textarea:focus{ box-shadow:4px 4px 0 var(--box-shadow); }
+    .step-input:focus {outline: 2px solid #6aa5ff;background: #f3f8ff;}
 
-    /* hide text on small screens */
-    @media (max-width: 720px) {
-      .brand-text {
-        display: none;
-      }
-    }
+    .btn{ font-weight:800; border-radius:14px; cursor:pointer; box-shadow:6px 6px 0 var(--btn-shadow); background:#fff; }
+    .btn:active{ transform:translate(1px,1px); box-shadow:3px 3px 0 var(--box-shadow); }
+    .btn.primary{ background:var(--accent); }
+    .btn.secondary{ background:var(--accent-2); }
+    .btn.warn{ background:#fff; border-color:var(--warn); color:var(--warn); }
+    .btn.danger{ background:#e44; color:#fff; border:3px solid #000; }
+    .wide-btn{ width:100%; max-width:420px; }
+    @media (min-width:900px){ .wide-btn{ width:auto; } }
 
-    .nav-toggle{display:none;background:#1b1b1b;border:1px solid #292929;
-    color:#fff;border-radius:10px;padding:8px 10px;font-size:18px}
-    @media (max-width: 860px){
-      .nav-toggle{display:inline-flex;align-items:center;gap:8px}
-      .nav-links{display:none}
-    .nav-links.open{
-      display:flex; flex-direction:column; gap:12px;
-      position:absolute; left:12px; right:12px; top:70px; z-index:20;
-      background:#161616; border:1px solid #d99e28; border-radius:14px; padding:12px;
-      .brand img{height:28px}
-      .brand{font-size:18px}
-    }
+    /* Table (kept but hidden for now) */
+    table{ width:100%; border-collapse:separate; border-spacing:0; }
+    th, td{ border-bottom:2px solid var(--line); padding:8px; text-align:left; }
+    thead th{ background:#fff7d1; border-top:2px solid var(--line); }
+    tbody td, thead th{ border-left:2px solid var(--line); }
+    tbody td:last-child, thead th:last-child{ border-right:2px solid var(--line); }
+    [aria-labelledby="recipe-h"]{ display:none !important; }
+
+    .badge{ display:inline-flex; padding:2px 8px; border:2px solid var(--line); border-radius:999px; font-size:.85rem;}
+    .mono{ display:block; font-family:ui-monospace,Menlo,Consolas,monospace; }
+    .shields {height: 1.75em; padding-right: 1em; padding-top: 0.5em;}
+
+    .preset-manager{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center;}
+    .preset-manager input, .preset-manager select{ flex:1; padding:4px 6px; font-size:0.9rem;}
+    #savedPresetsView { margin-top:8px; font-size:.95rem }
+    .preset-list__title { font-weight:600; margin-bottom:4px }
+    .preset-list ul { margin:0; padding-left:1.1rem }
+    .preset-list li { list-style: square; }
+    .muted { opacity:.7 }
+
+    /* Card list */
+    .cards{ display:grid; gap:12px; }
+    .card-row{ border:3px solid var(--line); border-radius:14px; background:#fff; padding:12px; box-shadow:6px 6px 0 var(--box-shadow); position:relative; }
+    .card-row h4{ margin:0 0 6px; font-size:1rem; padding-right:70px; }
+    .pill{ display:inline-block; border:2px solid var(--line); padding:2px 8px; border-radius:999px; font-weight:700; }
+    .kv{ display:grid; gap:6px; }
+    .kv-row{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px; }
+    .kv-row .k{ color:var(--muted); font-size:.9rem; }
+    .kv-row .v{ font-weight:700; font-variant-numeric:tabular-nums; }
+    @media (min-width:720px){ .kv-row{ grid-template-columns:220px 1fr; } }
+    .card-actions{ position:absolute; top:10px; right:10px; display:flex; gap:6px; }
+    .icon-btn{ width:28px; height:28px; border:0px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size: x-large;}
+    .icon-btn.danger{ color:var(--warn); border-color:var(--warn); }
+    @media screen {.row{justify-content: space-around;}}
+    .settings {display: grid; grid-template-columns: 1fr 1fr; justify-items: end;}
+
+    .results {display: grid; justify-items: center;}
+    /* Results groups */
+    .results-group{ border:3px solid var(--line); border-radius:16px; padding:10px; margin:10px 0 14px; }
+    .results-group summary{ cursor:pointer; font-weight:800; list-style:none; }
+    .results-group summary::-webkit-details-marker{ display:none; }
+    .results-group.production{ background:#fff6e5; }
+    .results-group.purchase{ background:#e9f6ff; }
+    details summary {list-style: none;cursor: pointer;display: flex;align-items: center;justify-content: space-between;padding: 14px 16px;margin:-8px -8px 12px;border-radius:12px}
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after {content: '▾';font-size: 40px;color: var(--ink);transition: transform 0.2s ease}
+    details[open] summary::after {transform: rotate(180deg)}
+
+    .sticky-footer{ margin-top:16px; }
+    .footer-card{ background:#fff; border:3px solid var(--line); border-radius:18px; padding:10px; display:grid; gap:8px; align-items:center; justify-content:space-around; justify-items: center; box-shadow:6px 6px 0 var(--box-shadow); flex-wrap:wrap; }
+
+    /* Unified modal system */
+    .modal{ position:fixed; inset:0; display:none; z-index:2000; }
+    .modal.open{ display:block; }
+    .modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.45); }
+    .modal-dialog{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(900px,92vw); max-height:86vh; background:#fff; border:3px solid var(--line); border-radius:16px; box-shadow:12px 12px 0 var(--box-shadow); overflow:hidden; display:flex; flex-direction:column; }
+    .modal-titlebar{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; border-bottom:3px solid var(--line); background:#fff7d1; }
+    .modal-body{ overflow:auto; padding:12px; flex:1; }
+    .modal-body iframe{ width:100%; height:100%; border:0; background:#fff; }
+    .no-scroll{ overflow:hidden; }
+    .form-grid {display: grid;}
+    .full {display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5em;}
+
+    /* Form fields */
+    .input-row { padding:.4rem .6rem; transition:background .15s ease; }
+    .formfield { width:30%; text-align:end; }
+    .formgrid .full { display:block; padding:.35rem .5rem; }
+    .step-input:focus, .formfield:focus { outline:0; background:#f3f8ff; box-shadow:0 0 0 2px var(--accent,#6aa5ff) inset, 0 0 0 2px var(--accent,#6aa5ff); }
+    .row.active, .input-row.active, label.full.active, .full.active { background:#fffceb; border-radius:6px; }
+
+    /* Tiny error banner */
+    #errBanner{ position:fixed; right:8px; top:8px; background:#ffe1e1; color:#8b0000; border:3px solid #8b0000; padding:6px 10px; border-radius:10px; z-index:5000; display:none; box-shadow:4px 4px 0 var(--box-shadow); }
+
+    /* Floating calculator button */
+    .calc-fab{position: fixed;right: 16px;bottom: 16px;width: fit-content;height: 100px;padding: 0;border: none;background: transparent; cursor: pointer;z-index: 1000;}
+    .calc-fab img,.calc-fab svg{width: 100%;height: 100%;display: block;}
+
+    /* Optional: focus-visible ring for keyboard users */
+    .calc-fab:focus-visible{outline: 3px solid #000;outline-offset: 4px;}
+
   </style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",                    // Defines the vocabulary for structured data
-  "@type": "Restaurant",                               // Entity type: tells Google it's a restaurant business
-  "name": "Faith and Fire BBQ",                        // The official business name
-  "image": "https://www.faithandfirebbq.com/og-image.jpg",  // Brand or hero image used in rich results
-  "url": "https://www.faithandfirebbq.com/",               // Primary website URL
-  "telephone": "+1-318-987-6102",                      // Business phone number (E.164 format recommended)
-  "servesCuisine": "Barbecue",                         // Cuisine type (can add more: "Barbecue, American, Southern")
-  
-  "address": {                                         // Physical street address of the business
-    "@type": "PostalAddress",
-    "streetAddress": "4729 Bellevue Rd.",              // Street number and name
-    "addressLocality": "Haughton",                     // City
-    "addressRegion": "LA",                             // State/region
-    "postalCode": "71037",                             // ZIP/postal code
-    "addressCountry": "US"                             // ISO country code
-  },
-
-  "openingHoursSpecification": [                       // List of days/times when business is open
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday","Tuesday"],
-      "opens": "11:00",
-      "closes": "15:00"
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Wednesday","Thursday","Friday","Saturday"],
-      "opens": "11:00",
-      "closes": "19:00"
-    }
-  ],
-
-  "menu": "https://www.faithandfirebbq.com/#menu",          // Direct link to menu section or page
-  "priceRange": "$$",                                  // General price indicator ($ = inexpensive, $$$$ = fine dining)
-
-  "sameAs": [                                           // Links to verified social or directory profiles
-    "https://www.facebook.com/faithandfirebbq",
-    "https://www.instagram.com/faithandfirebbq"
-  ]
-}
-</script>
-
-  
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn  = document.querySelector('.nav-toggle');
-    const menu = document.getElementById(btn?.getAttribute('aria-controls') || 'site-nav');
-    if (!btn || !menu) return;
-
-    const openMenu  = () => { menu.classList.add('open');  btn.setAttribute('aria-expanded','true');  document.body.classList.add('nav-open'); };
-    const closeMenu = () => { menu.classList.remove('open'); btn.setAttribute('aria-expanded','false'); document.body.classList.remove('nav-open'); };
-    const toggle    = () => (menu.classList.contains('open') ? closeMenu() : openMenu());
-
-    btn.addEventListener('click', toggle);
-
-    // 1) Close when a nav link is clicked
-    menu.addEventListener('click', (e) => {
-      if (e.target.matches('a')) closeMenu();
-    });
-
-    // 2) Close on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeMenu();
-    });
-
-    // 3) Close if you click outside the menu/button
-    document.addEventListener('click', (e) => {
-      if (!menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
-    });
-
-    // 4) Close if resized to desktop
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 860) closeMenu();
-    });
-  });
-</script>
-
-
 </head>
 <body>
-  <header>
-    <div class="container">
-      <nav>
-        <div class="brand">
-          <a href="https://www.faithandfirebbq.com/" style="text-decoration:none; color:inherit;">
-            <img src="apple-touch-icon.png"
-                alt="Faith and Fire BBQ logo"
-                style="height:64px; vertical-align:middle; margin-right:8px;">
-            <span class="brand-text">Faith and Fire BBQ</span>
-          </a>
-        </div>
-        <button class="nav-toggle"
-                aria-label="Open menu"
-                aria-controls="site-nav"
-                aria-expanded="false">☰</button>
+  <div id="errBanner">Script error</div>
+  <div class="wrap">
+    <h1>Bulk Food Prep Calculator</h1>
+    <p>Enter plates & overage, then define per‑plate ingredients with purchase pack & yield. The tool computes production totals and exact purchase packs.</p>
 
-        <div id="site-nav" class="nav-links">
-          <a href="#menu">Menu</a>
-          <a href="#hours">Hours</a>
-          <a href="#location">Where to buy</a>
-          <a href="#catering">Catering</a>
-          <a href="#contact">Contact</a>
-        </div>        
-      </nav>
+    <div class="grid cols-2">
+      <!-- Settings -->
+      <section class="card" aria-labelledby="settings-h">
+        <h2 id="settings-h">Unit Volume</h2>
+        <div class="row settings">
+          <label for="plates">Units</label>
+          <input class="step-input" id="plates" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="1" step="1" value="10" />
+        </div>
+        <div class="row settings" style="margin-top:8px;">
+          <label for="overage">Overage %</label>
+          <input class="step-input" id="overage" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" min="0" step="1" value="10" />
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <span class="mono badge" style="display:none;">Yield <span id="effectivePlates">10</span></span>
+          <img id="yieldBadge" class="shields" src="https://img.shields.io/badge/yield-someQuantity-blue" alt="yield">
+        </div>
+      </section>
+
+      <button id="btnCalc" class="btn line wide-btn" style="display: none;">Calculator</button>
+      <!-- Calculator FAB -->
+      <button id="calcFab" class="calc-fab" aria-label="Open calculator">
+        <img src="/calculator/calculator.svg" alt="" />
+      </button>
+
+      <section class="card" aria-labelledby="settings-h">
+        <h2>Presets</h2>
+        <div class="row" style="margin-top:6px; gap:6px;">
+          <button id="loadDefaults" class="btn line wide-btn">Church BBQ Plate Lunch</button>
+          <!-- Read-only saved presets list (optional) -->
+          <button id="btnLoadPre" class="btn wide-btn">↺ Load Preset</button>
+        </div>
+        <div id="savedPresetsView"></div>
+        <div id="presetManager" class="preset-manager">
+          <button id="btnDelPre" class="btn warn wide-btn">🗑 Delete a Preset</button>
+        </div>
+      </section>
+
+
+      <section class="card" aria-labelledby="settings-h">
+        <h2 style="margin-top:18px">Supply Order</h2>
+        <div class="row">
+          <div class="col1">
+            <div class="row" style="gap:8px;">
+              <button id="btnAddIng" class="btn primary wide-btn">+ Add New Item</button>
+              <button id="clearAll" class="btn warn wide-btn">🗑 Clear All Items</button>
+              <button id="btnAddPre" class="btn secondary wide-btn">🖫 Save as Preset</button>
+            </div>
+          </div>
+          <div class="grow">
+            <button style="display: none;" id="runTests" class="btn">Run Tests</button>
+              <button id="exportJson" class="btn wide-btn">Export</button>
+            <button id="importJson" class="btn wide-btn">Import</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="settings-h">
+        <h2>Totals</h2>
+        <div class="row">
+          <div class="wrap">
+            <div class="row">
+              <span class="badge">Grand Total: <span id="grandTotal" class="mono">$0.00</span></span>
+              <span class="badge">Cost / Plate: <span id="costPerPlate" class="mono">$0.00</span></span>
+            </div>
+            <br>
+            <div class="row">
+              <button id="recalc" class="btn primary" style="display: none;">Recalculate</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kept (hidden) table for power editing if needed later -->
+      <section class="card" aria-labelledby="recipe-h">
+        <h2 id="recipe-h">Per‑Plate Recipe → Purchase Packs</h2>
+        <div class="table-wrap" style="overflow:auto;">
+          <table id="recipeTable" aria-describedby="recipeHelp">
+            <thead>
+              <tr>
+                <th>Item</th><th>Ingredient</th><th>Per‑Plate Qty</th><th>Per‑Plate Unit</th>
+                <th>Yield (production / 1 purchase unit)</th><th>Purchase Unit</th><th>Pack Size</th><th>Pack Unit</th>
+                <th>Unit Cost</th><th>Pack Cost</th><th>Notes</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <p id="recipeHelp" class="small">Example: mayo 64oz jars → PU=oz, Pack Size=64, Pack Unit=oz, Yield=1. Raw pork butt → PU=lb, Yield≈0.60.</p>
+      </section>
+
     </div>
-  </header>
 
-  <main class="container">
-    <section class="hero">
-      <span class="badge">Fueled by Faith, Flavored by Fire</span>
-      <h1>Real wood-smoked barbecue, made fresh daily.</h1>
-      <p>Brisket with bark, ribs with pull, and sides that taste like home. Order ahead for pickup, grab a plate, or book us to cater your next event.</p>
-      <div class="cta">
-        <a class="btn primary" href="tel:+13189876102">Call to Order</a>
-        <a class="btn" href="#menu">See the Menu</a>
-        <a class="btn" href="#catering">Catering</a>
-      </div>
+  <div class="results">
+    <!-- Results -->
+    <section class="card" style="margin-top:16px;margin-bottom: 4em;" aria-labelledby="results-h">
+      <h2 id="results-h">Results</h2>
+
+      <details class="results-group purchase">
+        <summary>Supply Order (by SKU/pack)</summary>
+        <div id="purchaseCards" class="cards" style="margin-top:8px;"></div>
+      </details>
+
+      <details class="results-group production" open>
+        <summary>Production Output (per ingredient)</summary>
+        <div id="productionCards" class="cards" style="margin-top:8px;"></div>
+      </details>
     </section>
+  </div>
 
-    <section id="menu" class="two-col">
-      <div class="card">
-        <h2>Menu</h2>
-        <div class="notice"><em>Prices and availability may vary by day. Ask about today’s specials.</em></div>
-        <br/>
-        <div class="menu" aria-label="Menu">
-          <div class="menu-item"><strong>Prime Brisket (1/2 lb)</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>Pork Ribs (1/2 rack)</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>Pulled Pork (1/2 lb)</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>Smoked Sausage Link</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>Turkey (1/2 lb)</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>2-Meat Plate + 2 sides</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>Family Pack (feeds 4)</strong><span class="price"></span></div>
-          <div class="menu-item"><strong>**Sides:** slaw, beans, mac, potato salad</strong><span class="price"></span></div>
+  </div>
+  <!-- Ingredient Modal -->
+  <div id="ingModal" class="modal" aria-hidden="true" role="dialog" aria-label="Add / Edit Ingredient">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-titlebar">
+        <span id="ingTitle"><strong>Add / Edit Ingredient</strong></span>
+        <div class="actions">
+          <button class="btn line" id="ingClose">✕</button>
         </div>
       </div>
-      <div class="card" id="catering">
-        <h2>Catering</h2>
-        <p>From office lunches to weddings, we’ve got you covered. Full-service buffet, bulk trays, or on-site pit service. Tell us your headcount and date and we’ll send a quote.</p>
-        <ul>
-          <li>Bulk meats & sides by the pan</li>
-          <li>Disposable serving kits available</li>
-          <li>On-site pit & carving (limited dates)</li>
-        </ul>
-        <a style="display: none;" class="btn" href="#contact">Request a Quote</a>
-        <div class="card" id="contact">
-          <h2>Contact</h2>
-          <form action="https://formspree.io/f/mblzqpyn" target="_self" method="POST">
-            <label>Name<input type="text" name="name" required></label>
-            <label>Email<input type="email" name="email" required></label>
-            <label>Phone<input type="tel" name="phone"></label>
-            <label>Message<textarea name="message" rows="4" placeholder="Tell us about your order or event…" required></textarea></label>
-                <!-- This line makes the redirect work -->
-            <input type="hidden" name="_redirect" value="https://www.faithandfirebbq.com/thanks.html">
-            <button class="btn primary" type="submit">Send</button>
-          </form>
-          <p style="color:var(--muted);margin-top:8px">* Or call us @ <a href="tel:+13189876102" style="color: inherit;">(318) 987-6102</a></p>
+      <div class="modal-body">
+        <form id="ingForm">
+          <div class="form-grid">
+            <label class="full">Item/Category
+              <input class="step-input formfield" id="f_item" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" />
+            </label>
+              <small class="help">Groups multiple ingredients under the same item.</small><br>
+            <label class="full">Ingredient
+              <input class="step-input formfield" id="f_ingredient" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" />
+            </label>
+              <small class="help">Actual product you buy or use.</small><br>
+            <label class="full">Per‑Plate Qty
+              <input class="step-input formfield" id="f_ppqty" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
+            </label>
+              <small class="help">Amount given to one customer.</small><br>
+            <label class="full">Per‑Plate Unit
+              <select class="step-input formfield" id="f_ppunit">
+                <option value="oz">oz</option>
+                <option value="lb">lb</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+              <small class="help">Unit of measurement used per plate.</small><br>
+            <label class="full">Yield per Purchase Unit
+              <input class="step-input formfield" id="f_yield" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
+            </label>
+              <small class="help">Portion of usable product after loss.</small><br>
+            <label class="full">Purchase Unit
+              <select class="step-input formfield" id="f_pu">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+              <small class="help">How the ingredient is measured when purchasing.</small><br>
+            <label class="full">Pack Size
+              <input class="step-input formfield" id="f_packsize" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
+            </label>
+              <small class="help">How much you get when buying one pack.</small><br>
+            <label class="full">Pack Unit
+              <select class="step-input formfield" id="f_packunit">
+                <option value="lb">lb</option>
+                <option value="oz">oz</option>
+                <option value="piece">piece</option>
+              </select>
+            </label>
+              <small class="help">Must match how pack size is measured.</small><br>
+            <label class="full">Unit Cost
+              <input class="step-input formfield" id="f_unitcost" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
+            </label>
+              <small class="help">Price per purchase unit (ex: $0.89 per lb).</small><br>
+            <label class="full">Pack Cost
+              <input class="step-input formfield" id="f_packcost" type="text" inputmode="decimal" enterkeyhint="next" autocomplete="off" step="0.01" min="0" />
+            </label>
+              <small class="help">Total cost for one pack. Use this OR unit cost below, not both.</small><br>
+            <label class="full" class="full">Notes
+            </label>
+            <textarea class="step-input formfield" id="f_notes" type="text" style="width:90%; height:4.1em; text-align:left;"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-titlebar" style="border-top:3px solid var(--line); border-bottom:0; background:#fff;">
+        <div class="grow"></div>
+        <div class="actions">
+          <button class="btn line" id="ingCancel">Cancel</button>
+          <button class="btn primary" id="ingSave">Save</button>
         </div>
-      </div>
-    </section>
-
-    <section id="hours" class="grid" style="margin-top:18px; display: none;">
-      <div class="card">
-        <h2>Hours</h2>
-        <table class="hours" aria-label="Hours">
-          <tr><td>Mon–Sat</td><td>11:00a – 8:00p</td></tr>
-          <tr><td>Sun</td><td>Closed</td></tr>
-        </table>
-        <p style="color:var(--muted)">*We sell out most days. Follow our socials for drops and specials.*</p>
-      </div>
-      <div class="card" id="address">
-        <h2>Location</h2>
-        <p>4729 Bellevue Rd, Haughton, LA 71037</p>
-        <p><a class="btn" href="https://maps.google.com/?q=123%20Oak%20St%20Yourtown%20LA%2071111" target="_blank" rel="noopener">Open in Maps</a></p>
-      </div>
-    </section>
-
-    <section id="stores" class="card" style="margin-top:24px">
-      <h2 id="location">Find Our Seasoning in Stores</h2>
-      <p style="color:var(--muted);margin-bottom:12px">
-        You can find Faith and Fire BBQ seasoning at select retailers across the region.
-        Tap a pin below for store details and directions.
-      </p>
-      <iframe
-        src="https://www.google.com/maps/d/embed?mid=1UQ16___74wazABJkH1Dq0OGdMh-rw3M&ehbc=2E312F"
-        width="100%" height="450"
-        style="border:0; border-radius:14px; overflow:hidden"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
-    </section>
-
-    <section class="card" aria-label="Food Photos" style="margin-top:18px">
-      <h2>See the Smoke</h2>
-      <p>We keep the images fresh so you know the fire never dies.</p>
-      <div class="grid" style="--cols:3">
-        <img src="./photos/pit.jpg" alt="Tank smoker with clean blue smoke" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/ribs.jpg" alt="Rack of ribs on cutting board" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/chicken.jpg" alt="BBQ chicken in the smoker" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/seasoning.jpg" alt="Sliced brisket with bark" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/pulled-ham.jpg" alt="Smoked pulled ham by the pound" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/pulled-pork.jpg" alt="Smoked pulled pork in bulk" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/plates.jpg" alt="BBQ meat meal plate with sides" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/beans.jpg" alt="Sliced brisket with bark" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/corn.jpg" alt="Smoked pulled pork in bulk" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/jambalya.jpg" alt="Sliced brisket with bark" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/brisket.jpg" alt="Sliced brisket with bark" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/catering.jpg" alt="Sliced brisket with bark" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-        <img src="./photos/brand.jpg" alt="BBQ meat meal plate with sides" style="width:100%;border-radius:14px;border:1px solid #242424"/>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <div class="container">
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div>© <span id="y"></span> Faith and Fire BBQ • <a href="#" style="color:#ddd">Privacy</a></div>
-        <div><a style="color:#ddd" href="/calculator/">Food Prep Calculator</a></div>
-        <div>Follow: <a href="https://www.instagram.com/faithandfirebbq" style="color:#ddd">Instagram</a> · <a href="https://www.facebook.com/faithandfirebbq" style="color:#ddd">Facebook</a></div>
       </div>
     </div>
-  </footer>
-  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+  </div>
+
+  <!-- Calculator Modal -->
+  <div id="calcModal" class="modal" aria-hidden="true" role="dialog" aria-label="Calculator">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" style="width:min(500px,92vw);height:90%;">
+      <div class="modal-titlebar">
+        <span><strong>Calculator</strong></span>
+        <div class="actions">
+          <button class="btn line" id="calcClose">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" style="height:520px;">
+        <iframe id="calcFrame" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // Error banner
+  (function(){
+    const b = document.getElementById('errBanner');
+    window.addEventListener('error', e => { b.style.display='block'; b.textContent = 'Error: ' + (e.message||'unknown'); console.error(e); });
+  })();
+
+  // --- Utilities ---
+  const byId = (id) => document.getElementById(id);
+  const ozToLb = (oz) => oz/16; const lbToOz = (lb) => lb*16;
+  const num = (v,d=0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
+
+  // --- Data Model ---
+  function emptyRow(){
+    return { item:"", ingredient:"", perPlateQty:0, perPlateUnit:"oz", yieldPerPurchaseUnit:1, purchaseUnit:"lb", packSize:1, packUnit:"lb", unitCost:0, packCost:0, notes:"" };
+  }
+  let rows = [];
+  function bbqPreset(){
+    return [
+      { item:"Pulled Pork", ingredient:"Pork shoulder/butt", perPlateQty:6, perPlateUnit:"oz", yieldPerPurchaseUnit:0.60, purchaseUnit:"lb", packSize:7, packUnit:"lb", unitCost:1, packCost:0, notes:"60% yield; ~7 lb average"},
+      { item:"Beans", ingredient:"Canned beans", perPlateQty:4.0, perPlateUnit:"oz", yieldPerPurchaseUnit:2.5, purchaseUnit:"lb", packSize:20, packUnit:"lb", unitCost:1, packCost:0, notes:"Bushes baked beans, 100oz can"},
+      { item:"Beans", ingredient:"Ground sausage", perPlateQty:3.0, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"lb", packSize:3, packUnit:"lb", unitCost:5, packCost:0, notes:"Great Value, 3lb rolls"},
+      { item:"Beans", ingredient:"Brown sugar", perPlateQty:1.0, perPlateUnit:"oz", yieldPerPurchaseUnit:0.5, purchaseUnit:"lb", packSize:2, packUnit:"lb", unitCost:3, packCost:0, notes:"Light brown sugar, any brand"},
+      { item:"Beans", ingredient:"Barbeque sauce", perPlateQty:4.0, perPlateUnit:"oz", yieldPerPurchaseUnit:2.5, purchaseUnit:"lb", packSize:20, packUnit:"lb", unitCost:1, packCost:0, notes:"Sweet Baby Rays, 32oz bottle, case of 4 from Sam's Club"},
+      { item:"Potato Salad", ingredient:"Potatoes", perPlateQty:5.0, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"lb", packSize:10, packUnit:"lb", unitCost:0, packCost:5, notes:"Prepared tubs 5 lb"},
+      { item:"Potato Salad", ingredient:"Mayonnaise (64 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"oz", packSize:64, packUnit:"oz", unitCost:0, packCost:0, notes:"Duke's, 64 oz jar"},
+      { item:"Potato Salad", ingredient:"Mustard (64 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:1.0, purchaseUnit:"oz", packSize:64, packUnit:"oz", unitCost:1, packCost:8.5, notes:"Yellow mustard, 64 oz jar"},
+      { item:"Potato Salad", ingredient:"Eggs", perPlateQty:0.5, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:300, packUnit:"piece", unitCost:0, packCost:60, notes:"300 count crate/box from Sam's Club"},
+      { item:"Potato Salad", ingredient:"Pickles (128 oz jar)", perPlateQty:0.5, perPlateUnit:"oz", yieldPerPurchaseUnit:100, purchaseUnit:"oz", packSize:128, packUnit:"oz", unitCost:0, packCost:10, notes:"128 oz jar"},
+      { item:"Bread", ingredient:"Bread slices", perPlateQty:1.0, perPlateUnit:"piece", yieldPerPurchaseUnit:20.0, purchaseUnit:"piece", packSize:20, packUnit:"piece", unitCost:0, packCost:2, notes:"~20 slices/loaf, white bread"},
+      { item:"Dessert", ingredient:"Brownie mix", perPlateQty:1.0, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:12, packUnit:"piece", unitCost:0, packCost:1, notes:"12 squares per pan, Duncan Hines mix"},
+      { item:"Dessert", ingredient:"Eggs", perPlateQty:0.2, perPlateUnit:"piece", yieldPerPurchaseUnit:1.0, purchaseUnit:"piece", packSize:300, packUnit:"piece", unitCost:0, packCost:60, notes:"300 count crate/box from Sam's Club"},
+      { item:"Dessert", ingredient:"Oil", perPlateQty:1.0, perPlateUnit:"oz", yieldPerPurchaseUnit:100.0, purchaseUnit:"oz", packSize:24, packUnit:"oz", unitCost:0, packCost:4, notes:"Vegetable oil, Great Value"}
+    ];
+  }
+
+  function chipsDrinksPreset(){
+  return [
+    {
+      item: "test",ingredient: "chips",perPlateQty: 1,perPlateUnit: "piece",yieldPerPurchaseUnit: 10,purchaseUnit: "piece",packSize: 10,packUnit: "piece",unitCost: 0,packCost: 10,notes: ""
+    },
+    {
+      item: "test",ingredient: "drinks",perPlateQty: 1,perPlateUnit: "piece",yieldPerPurchaseUnit: 10,purchaseUnit: "piece",packSize: 10,packUnit: "piece",unitCost: 0,packCost: 10,notes: ""
+    }
+  ];
+}
+
+
+  // --- Hidden table rendering (kept minimal) ---
+  function makeRowDOM(r, index){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input data-field="item" value="${r.item}"></td>
+      <td><input data-field="ingredient" value="${r.ingredient}"></td>
+      <td><input data-field="perPlateQty" type="number" min="0" step="0.01" value="${r.perPlateQty}"></td>
+      <td>
+        <select data-field="perPlateUnit">
+          <option value="oz" ${r.perPlateUnit==='oz'?"selected":""}>oz</option>
+          <option value="lb" ${r.perPlateUnit==='lb'?"selected":""}>lb</option>
+          <option value="piece" ${r.perPlateUnit==='piece'?"selected":""}>piece</option>
+        </select>
+      </td>
+      <td><input data-field="yieldPerPurchaseUnit" type="number" min="0" step="0.01" value="${r.yieldPerPurchaseUnit}"></td>
+      <td>
+        <select data-field="purchaseUnit">
+          <option value="lb" ${r.purchaseUnit==='lb'?"selected":""}>lb</option>
+          <option value="oz" ${r.purchaseUnit==='oz'?"selected":""}>oz</option>
+          <option value="piece" ${r.purchaseUnit==='piece'?"selected":""}>piece</option>
+        </select>
+      </td>
+      <td><input data-field="packSize" type="number" min="0" step="0.01" value="${r.packSize}"></td>
+      <td>
+        <select data-field="packUnit">
+          <option value="lb" ${r.packUnit==='lb'?"selected":""}>lb</option>
+          <option value="oz" ${r.packUnit==='oz'?"selected":""}>oz</option>
+          <option value="piece" ${r.packUnit==='piece'?"selected":""}>piece</option>
+        </select>
+      </td>
+      <td><input data-field="unitCost" type="number" min="0" step="0.01" value="${r.unitCost??0}"></td>
+      <td><input data-field="packCost" type="number" min="0" step="0.01" value="${r.packCost??0}"></td>
+      <td><input data-field="notes" value="${r.notes||''}"></td>
+      <td><button class="btn warn del">✕</button></td>`;
+
+    tr.querySelectorAll('[data-field]').forEach(el=>{
+      el.addEventListener('input', e=>{
+        const f = e.target.getAttribute('data-field');
+        let v = e.target.value;
+        if(['perPlateQty','yieldPerPurchaseUnit','packSize','unitCost','packCost'].includes(f)) v = num(v,0);
+        rows[index][f] = v;
+        dirtyCalc();
+      });
+    });
+    tr.querySelector('.del').addEventListener('click', ()=>{ rows.splice(index,1); renderTable(); calcAll(); });
+    return tr;
+  }
+  function renderTable(){ const tb = byId('tbody'); if(!tb) return; tb.innerHTML=''; rows.forEach((r,i)=>tb.appendChild(makeRowDOM(r,i))); }
+
+  // --- Calculations & Cards ---
+  let editingIndex = null;
+
+  /* ---------- helpers ---------- */
+  const toNum = (v, d=0) => Number.isFinite(+v) ? +v : d;
+  const normUnit = (u) => (u||'').toString().trim().toLowerCase()
+    .replace(/lbs?$/,'lb')
+    .replace(/ounces?$/,'oz')
+    .replace(/pieces?$/,'piece')
+    .replace(/\s+/g,''); // tolerate minor typos/spaces
+
+  function effectivePlates(){
+    const plates = Math.max(0, Math.trunc(num(byId('plates').value, 0)));
+    const ov     = Math.max(0, +num(byId('overage').value, 0)); // allow decimal %
+    const extra  = Math.ceil((plates * ov) / 100);               // add only the extra
+    return plates + extra;                                       // 200 @10% => 220
+  }
+
+  function perPlateproductionToOz(qty, unit){
+    const u = normUnit(unit);
+    if (u === 'oz') return qty;
+    if (u === 'lb') return lbToOz(qty);
+    return 0;
+  }
+  function perPlatePieces(qty, unit){ return normUnit(unit) === 'piece' ? qty : 0; }
+
+  function summarizeproduction(){
+    const eff = effectivePlates();
+    return rows.map(r=>{
+      const productionOzPerPlate     = perPlateproductionToOz(r.perPlateQty, r.perPlateUnit);
+      const productionPiecesPerPlate = perPlatePieces(r.perPlateQty, r.perPlateUnit);
+      const productionOz = productionOzPerPlate * eff;
+      const pieces       = productionPiecesPerPlate * eff;
+      const productionLb = ozToLb(productionOz);
+      return { item:r.item, ingredient:r.ingredient, productionOz, productionLb, pieces, eff };
+    });
+  }
+
+  /* ---------- supply-order math (packs-aware & yield-normalized) ---------- */
+
+  // Convert the per-row need into its purchase unit
+  function needInPurchaseUnit(row, eff){
+    const pu = normUnit(row.purchaseUnit);
+    const needPieces = perPlatePieces(row.perPlateQty, row.perPlateUnit) * eff;
+    const needOz     = perPlateproductionToOz(row.perPlateQty, row.perPlateUnit) * eff;
+
+    switch (pu) {
+      case 'piece': return { need: needPieces, unit: 'piece' };
+      case 'oz':    return { need: needOz, unit: 'oz' };
+      case 'lb':    return { need: ozToLb(needOz), unit: 'lb' };
+      default:      return { need: 0, unit: pu };
+    }
+  }
+
+  // Normalize yield:
+  // - For 'piece', yield should be 1 piece per purchase unit.
+  // - For weight units, use the provided number (defaults to 1 if blank/0).
+  function normalizeYield(row, unitNorm){
+    let yld = toNum(row.yieldPerPurchaseUnit, 0);
+    if (unitNorm === 'piece') return 1;         // force sane default for pieces
+    return yld > 0 ? yld : 1;                   // weights: assume 1 if not given
+  }
+
+  function computeOrderRow(row, eff){
+    const purchaseUnit = normUnit(row.purchaseUnit);
+    const packUnit     = normUnit(row.packUnit) || purchaseUnit;  // default same
+    const packSize     = toNum(row.packSize, 0);
+    const unitCost     = toNum(row.unitCost, 0);
+    const packCost     = toNum(row.packCost, 0);
+
+    // Need expressed in purchase unit (before yield)
+    const { need } = needInPurchaseUnit(row, eff);
+
+    // Apply yield (how much usable you get from one *purchase unit*)
+    const yld = normalizeYield(row, purchaseUnit);
+    const requiredPurchaseUnits = need / yld;   // e.g., 11 pieces / 1 = 11 purchase units
+
+    // Pack detection: unit must match (piece↔piece, lb↔lb, oz↔oz) and size > 0
+    const hasPack = packSize > 0 && packUnit === purchaseUnit;
+
+    let packs = 0;
+    let qtyToBuy = requiredPurchaseUnits;       // still in purchase unit
+    let totalCost = 0;
+
+    if (hasPack){
+      // Round up to whole packs, then buy packs * packSize purchase units
+      packs    = Math.ceil(requiredPurchaseUnits / packSize);
+      qtyToBuy = packs * packSize;
+
+      totalCost = packCost > 0
+        ? packs * packCost
+        : qtyToBuy * unitCost;
+    } else {
+      // No packs—buy the exact required units (weights may be fractional)
+      totalCost = requiredPurchaseUnits * unitCost;
+    }
+
+    return {
+      item: row.item,
+      ingredient: row.ingredient,
+      purchaseUnit,
+      qtyToBuy,
+      packs,
+      unitCost,
+      packCost,
+      totalCost,
+      packSize,
+      packUnit
+    };
+  }
+
+  /* ----------------- Rendering & totals ----------------- */
+
+  function calcAll(){
+    const eff = effectivePlates();
+    byId('effectivePlates').textContent = eff;
+
+    // Production cards
+    const productionWrap = byId('productionCards');
+    productionWrap.innerHTML = '';
+    const productionRows = summarizeproduction();
+    productionRows.forEach((e, idx)=>{
+      const r = rows[idx]; if (!r) return;
+      const showPieces = e.pieces > 0;
+      const rowEl = document.createElement('div');
+      rowEl.className = 'card-row';
+      rowEl.innerHTML = `
+        <h4>${r.item?`${r.item} – `:''}${r.ingredient||''}</h4>
+        <div class="kv">
+          <div class="kv-row"><div class="k">Per-plate</div><div class="v">${r.perPlateQty} ${r.perPlateUnit}</div></div>
+          <div class="kv-row"><div class="k">Effective Plates</div><div class="v">${eff}</div></div>
+          <div class="kv-row"><div class="k">Total production (oz)</div><div class="v">${e.productionOz.toFixed(2)}</div></div>
+          <div class="kv-row"><div class="k">Total production (lb)</div><div class="v">${e.productionLb.toFixed(2)}</div></div>
+          ${showPieces?`<div class="kv-row"><div class="k">Total Pieces</div><div class="v">${e.pieces}</div></div>`:''}
+        </div>`;
+      productionWrap.appendChild(rowEl);
+    });
+
+    // Supply order cards
+    const purchaseWrap = byId('purchaseCards');
+    purchaseWrap.innerHTML = '';
+    let grandTotal = 0;
+
+    rows.forEach((r, idx)=>{
+      const order = computeOrderRow(r, eff);
+      grandTotal += order.totalCost;
+
+      const card = document.createElement('div');
+      card.className = 'card-row';
+
+      const packPill = (order.packSize>0)
+        ? `<span class="pill">${order.packSize} ${order.packUnit} / pack</span>` : '';
+
+      const packsRow = (order.packs>0)
+        ? `<div class="kv-row"><div class="k">Packs (ceil)</div><div class="v">${order.packs}</div></div>` : '';
+
+      const unitCostRow = (order.packCost>0)
+        ? `<div class="kv-row"><div class="k">Pack Cost</div><div class="v">$${order.packCost.toFixed(2)} / pack</div></div>`
+        : (order.unitCost>0
+            ? `<div class="kv-row"><div class="k">Unit Cost</div><div class="v">$${order.unitCost.toFixed(2)} / ${order.purchaseUnit}</div></div>`
+            : '');
+
+      const qtyDecimals = order.purchaseUnit === 'piece' ? 0 : 2;
+
+      card.innerHTML = `
+        <h4>${order.ingredient||''} ${packPill}</h4>
+        <div class="kv">
+          <div class="kv-row"><div class="k">Purchase Unit</div><div class="v">${order.purchaseUnit}</div></div>
+          <div class="kv-row"><div class="k">Qty to Buy</div><div class="v">${order.qtyToBuy.toFixed(qtyDecimals)} ${order.purchaseUnit}</div></div>
+          ${packsRow}
+          ${unitCostRow}
+          <div class="kv-row"><div class="k">Total Cost</div><div class="v">$${order.totalCost.toFixed(2)}</div></div>
+          ${r.notes?`<div class="kv-row"><div class="k">Notes</div><div class="v">${r.notes}</div></div>`:''}
+        </div>`;
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+      actions.innerHTML = `
+        <button class="icon-btn" title="Edit">✎</button>
+        <button class="icon-btn danger" title="Delete">×</button>`;
+      actions.children[0].addEventListener('click', ()=>openIngredientModal('edit', idx));
+      actions.children[1].addEventListener('click', ()=>{
+        rows.splice(idx,1);
+        renderTable(); calcAll();
+      });
+
+      card.appendChild(actions);
+      purchaseWrap.appendChild(card);
+    });
+
+    byId('grandTotal').textContent  = ` \u00A0$${grandTotal.toFixed(2)}`;
+    const cpp = (grandTotal>0 && eff>0) ? grandTotal/eff : 0;
+    byId('costPerPlate').textContent = ` \u00A0$${cpp.toFixed(2)}`;
+
+    const badge = byId('yieldBadge');
+    if (badge) badge.src = `https://img.shields.io/badge/yield-${encodeURIComponent(eff)}-blue`;
+  }
+
+
+  // --- Modal helpers ---
+  function openModal(id){ const m=byId(id); if(!m) return; m.classList.add('open'); m.setAttribute('aria-hidden','false'); document.body.classList.add('no-scroll'); }
+  function closeModal(id){ const m=byId(id); if(!m) return; m.classList.remove('open'); m.setAttribute('aria-hidden','true'); document.body.classList.remove('no-scroll'); }
+
+  // Ingredient modal open/save
+  function openIngredientModal(mode='create', index=null){
+    editingIndex = (mode==='edit') ? index : null;
+    const r = (editingIndex!=null) ? rows[editingIndex] : emptyRow();
+    byId('ingTitle').innerHTML = `<strong>${editingIndex!=null?'Edit Ingredient':'Add Ingredient'}</strong>`;
+    byId('f_item').value = r.item||'';
+    byId('f_ingredient').value = r.ingredient||'';
+    byId('f_ppqty').value = r.perPlateQty||0;
+    byId('f_ppunit').value = r.perPlateUnit||'oz';
+    byId('f_yield').value = r.yieldPerPurchaseUnit||1;
+    byId('f_pu').value = r.purchaseUnit||'lb';
+    byId('f_packsize').value = r.packSize||0;
+    byId('f_packunit').value = r.packUnit||'lb';
+    byId('f_unitcost').value = r.unitCost||0;
+    byId('f_packcost').value = r.packCost||0;
+    byId('f_notes').value = r.notes||'';
+    const first = document.querySelector('#ingForm .step-input, #ingForm .formfield');
+    if (first) { first.focus(); first.select?.(); }
+    openModal('ingModal');
+  }
+  function saveIngredientFromModal(){
+    const r = {
+      item: byId('f_item').value.trim(),
+      ingredient: byId('f_ingredient').value.trim(),
+      perPlateQty: num(byId('f_ppqty').value,0),
+      perPlateUnit: byId('f_ppunit').value,
+      yieldPerPurchaseUnit: num(byId('f_yield').value,1),
+      purchaseUnit: byId('f_pu').value,
+      packSize: num(byId('f_packsize').value,0),
+      packUnit: byId('f_packunit').value,
+      unitCost: num(byId('f_unitcost').value,0),
+      packCost: num(byId('f_packcost').value,0),
+      notes: byId('f_notes').value.trim()
+    };
+    if(editingIndex!=null) rows[editingIndex]=r; else rows.push(r);
+    closeModal('ingModal'); renderTable(); calcAll();
+  }
+
+  // Calculator modal
+  function openCalcModal(){
+    const f = byId('calcFrame'); if(f && (!f.src || f.src==='about:blank')) f.src = '/calculator/calculator.html';
+    openModal('calcModal');
+  }
+
+  // Click FAB → open the same calculator modal
+  document.getElementById('calcFab')?.addEventListener('click', openCalcModal);
+
+
+  // --- Import/Export ---
+  function exportJSON() {
+    const data = {
+      plates: num(byId('plates').value, 0),
+      overage: num(byId('overage').value, 0),
+      rows
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'summary.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Keep this: actual import logic
+  async function importJSON(file) {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    byId('plates').value = num(data.plates, 0);
+    byId('overage').value = num(data.overage, 0);
+    rows = Array.isArray(data.rows) ? data.rows : [];
+    renderTable();
+    calcAll();
+  }
+
+  // New: launches the picker, then calls importJSON()
+  function importJSONPrompt() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        await importJSON(file);
+        alert('Import successful!');
+      } catch (err) {
+        console.error(err);
+        alert('Error importing JSON: ' + (err?.message || err));
+      }
+    };
+    input.click();
+  }
+
+  // --- Wire UI ---
+  function wireUI(){
+    const on = (id,ev,fn)=>{ const el=byId(id); if(el) el.addEventListener(ev,fn); else console.warn('Missing #'+id); };
+    on('loadDefaults','click', ()=>{ rows = bbqPreset(); renderTable(); calcAll(); });
+    on('clearAll','click', ()=>{ rows = []; renderTable(); calcAll(); });
+    on('btnAddIng','click', ()=>openIngredientModal('create'));
+    on('btnCalc','click', openCalcModal);
+    on('exportJson','click', exportJSON);
+    on('importJson', 'click', importJSONPrompt);
+    on('recalc','click', calcAll);
+    on('plates','input', dirtyCalc); on('overage','input', dirtyCalc);
+    // Modal chrome
+    on('ingSave','click', saveIngredientFromModal);
+    on('ingCancel','click', ()=>closeModal('ingModal'));
+    on('ingClose','click', ()=>closeModal('ingModal'));
+    on('calcClose','click', ()=>closeModal('calcModal'));
+    byId('ingModal').addEventListener('click', (e)=>{ if(e.target.classList.contains('modal-backdrop')) closeModal('ingModal'); });
+    byId('calcModal').addEventListener('click', (e)=>{ if(e.target.classList.contains('modal-backdrop')) closeModal('calcModal'); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeModal('ingModal'); closeModal('calcModal'); }});
+  }
+
+  function dirtyCalc(){ window.clearTimeout(dirtyCalc._t); dirtyCalc._t = window.setTimeout(calcAll, 60); }
+
+  // --- Tests ---
+  function runTests(){
+    const asserts = [];
+    const ok = (name,cond) => asserts.push({name,cond});
+    // Existence
+    ok('openCalcModal exists', typeof openCalcModal==='function');
+    ok('openIngredientModal exists', typeof openIngredientModal==='function');
+    ok('#ingModal present', !!byId('ingModal'));
+    ok('#calcModal present', !!byId('calcModal'));
+    // Preset load & calc
+    rows = bbqPreset(); renderTable(); calcAll();
+    ok('rows preset length > 0', rows.length>0);
+    ok('effective plates > 0', effectivePlates()>0);
+    ok('cost / plate not NaN', !Number.isNaN(Number(byId('costPerPlate').textContent.replace(/[^0-9.]/g,''))));
+    // Modal open/close
+    openIngredientModal('create'); ok('ingModal opens', byId('ingModal').classList.contains('open')); closeModal('ingModal'); ok('ingModal closes', !byId('ingModal').classList.contains('open'));
+    openCalcModal(); ok('calcModal opens', byId('calcModal').classList.contains('open')); closeModal('calcModal'); ok('calcModal closes', !byId('calcModal').classList.contains('open'));
+    // Report
+    const failed = asserts.filter(a=>!a.cond);
+    if(failed.length){ alert('Tests failed:\n'+failed.map(f=>'- '+f.name).join('\n')); } else { alert('All tests passed ('+asserts.length+')'); }
+  }
+
+  // --- Init ---
+  function init(){ rows = chipsDrinksPreset(); renderTable(); calcAll(); wireUI(); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+  // Expose tests
+  byId('runTests').addEventListener('click', runTests);
+
+  // ===== Persistent item-list presets with Save / Load / Delete =====
+  const STORAGE_KEY = 'bulkprep:presets';
+
+  const btnAddPre  = document.getElementById('btnAddPre');
+  const btnDelPre  = document.getElementById('btnDelPre');
+  const btnLoadPre = document.getElementById('btnLoadPre');
+  const listView   = document.getElementById('savedPresetsView'); // optional display-only list
+
+  // --- error banner helper (your look) ---
+  function showErrorBanner(msg){
+    const b = document.getElementById('errBanner');
+    if (!b){ alert(msg); return; }
+    b.textContent = msg;
+    b.style.display = 'block';
+    clearTimeout(showErrorBanner._t);
+    showErrorBanner._t = setTimeout(()=>{ b.style.display='none'; }, 4000);
+  }
+
+  // --- Your app adapters (FIXED to use `rows`) ---
+  function getItems() {
+    // Return a clean clone of the current working dataset
+    return Array.isArray(rows) ? rows.map(r => ({...r})) : [];
+  }
+
+  function setItems(data) {
+    // Defensive parse + coerce numeric fields back to numbers
+    const toNum = (v, d=0) => Number.isFinite(+v) ? +v : d;
+    const clean = (o) => ({
+      item: (o.item ?? '').toString(),
+      ingredient: (o.ingredient ?? '').toString(),
+      perPlateQty: toNum(o.perPlateQty, 0),
+      perPlateUnit: o.perPlateUnit || 'oz',
+      yieldPerPurchaseUnit: toNum(o.yieldPerPurchaseUnit, 1),
+      purchaseUnit: o.purchaseUnit || 'lb',
+      packSize: toNum(o.packSize, 0),
+      packUnit: o.packUnit || 'lb',
+      unitCost: toNum(o.unitCost, 0),
+      packCost: toNum(o.packCost, 0),
+      notes: (o.notes ?? '').toString()
+    });
+
+    rows = Array.isArray(data) ? data.map(clean) : [];
+    renderTable();
+    calcAll();
+
+    // Optional event hook for anything else
+    window.dispatchEvent(new CustomEvent('items:loaded', { detail: { count: rows.length }}));
+  }
+
+  // --- Validation helper (slightly relaxed) ---
+  const ITEM_KEYS = [
+    "item","ingredient","perPlateQty","perPlateUnit",
+    "yieldPerPurchaseUnit","purchaseUnit","packSize","packUnit",
+    "unitCost","packCost"
+  ];
+  function isValidItems(arr){
+    return Array.isArray(arr) &&
+      arr.every(o => o && typeof o === 'object' && ITEM_KEYS.every(k => k in o));
+  }
+
+  // --- storage helpers ---
+  function loadAllPresets(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {}; }
+    catch { return {}; }
+  }
+  function saveAllPresets(obj){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  }
+  function listNames(){
+    return Object.keys(loadAllPresets());
+  }
+
+  // --- read-only on-page list (optional) ---
+  function renderSavedList(){
+    if (!listView) return;
+    const names = listNames();
+    if (!names.length){
+      listView.innerHTML = '<div class="muted">No saved presets.</div>';
+      return;
+    }
+    listView.innerHTML = `
+      <div class="preset-list">
+        <div class="preset-list__title">Saved presets:</div>
+        <ul>${names.map(n => `<li>${n}</li>`).join('')}</ul>
+      </div>`;
+  }
+
+  // --- SAVE: prompt for name, ensure pure JSON, confirm overwrite ---
+  btnAddPre?.addEventListener('click', ()=>{
+    const items = getItems();
+    if (!Array.isArray(items) || items.length === 0){
+      showErrorBanner('Nothing to save: your item list is empty.');
+      return;
+    }
+    // ensure serializable (strip methods/getters/proxies)
+    let serializable;
+    try {
+      serializable = JSON.parse(JSON.stringify(items));
+    } catch (e) {
+      console.error('Serialization failed for items:', e, items);
+      showErrorBanner('Items could not be serialized for saving.');
+      return;
+    }
+
+    const name = prompt('Name this item list (preset):');
+    if (name === null) return; // canceled
+    const trimmed = (name || '').trim();
+    if (!trimmed){ showErrorBanner('Preset name cannot be blank.'); return; }
+
+    const all = loadAllPresets();
+    if (Object.prototype.hasOwnProperty.call(all, trimmed)){
+      if (!confirm(`"${trimmed}" already exists. Overwrite?`)) return;
+    }
+
+    try{
+      all[trimmed] = serializable;
+      saveAllPresets(all);
+      renderSavedList();
+      console.log('[Preset] Saved:', trimmed, serializable);
+      alert(`Saved preset "${trimmed}" (${serializable.length} items).`);
+    }catch(e){
+      console.error(e);
+      showErrorBanner('Failed to save preset (storage error).');
+    }
+  });
+
+  // --- LOAD: prompt by number or exact name; validate then set & render ---
+  btnLoadPre?.addEventListener('click', ()=>{
+    const all = loadAllPresets();
+    const names = Object.keys(all);
+    if (!names.length){ showErrorBanner('No saved presets found.'); return; }
+
+    const list = names.map((n,i)=> `${i+1}. ${n}`).join('\n');
+    const ans = prompt(`Load which preset?\n\n${list}\n\nEnter a number (1–${names.length}) or exact name:`);
+    if (ans === null) return;
+
+    let target = null;
+    const num = parseInt(ans, 10);
+    if (!Number.isNaN(num) && num >= 1 && num <= names.length){
+      target = names[num-1];
+    } else {
+      const needle = ans.trim().toLowerCase();
+      target = names.find(n => n.toLowerCase() === needle);
+    }
+    if (!target){ showErrorBanner('No matching preset found.'); return; }
+
+    const data = all[target];
+    if (!isValidItems(data)){
+      console.warn('[Preset] Invalid schema on load for', target, data);
+      showErrorBanner('Saved preset has an invalid format.');
+      return;
+    }
+
+    try{
+      setItems(data);
+      console.log('[Preset] Loaded:', target, data);
+      alert(`Loaded preset "${target}" (${data.length} items).`);
+    }catch(e){
+      console.error(e);
+      showErrorBanner('Failed to load preset.');
+    }
+  });
+
+  // --- DELETE: prompt by number or exact name ---
+  btnDelPre?.addEventListener('click', ()=>{
+    const all = loadAllPresets();
+    const names = Object.keys(all);
+    if (!names.length){ showErrorBanner('No saved presets found.'); return; }
+
+    const list = names.map((n,i)=> `${i+1}. ${n}`).join('\n');
+    const ans = prompt(`Delete which preset?\n\n${list}\n\nEnter a number (1–${names.length}) or exact name:`);
+    if (ans === null) return;
+
+    let target = null;
+    const num = parseInt(ans, 10);
+    if (!Number.isNaN(num) && num >= 1 && num <= names.length){
+      target = names[num-1];
+    } else {
+      const needle = ans.trim().toLowerCase();
+      target = names.find(n => n.toLowerCase() === needle);
+    }
+    if (!target){ showErrorBanner('No matching preset found.'); return; }
+
+    if (!confirm(`Really delete "${target}"?`)) return;
+
+    try{
+      delete all[target];
+      saveAllPresets(all);
+      renderSavedList();
+      alert(`Deleted preset "${target}".`);
+    }catch(e){
+      console.error(e);
+      showErrorBanner('Failed to delete preset (storage error).');
+    }
+  });
+
+  // initial list render
+  renderSavedList();
+
+  // ===== Enhanced form navigation (Enter to move focus) =====
+  document.addEventListener("DOMContentLoaded", () => {
+    const sections = ["#ingForm", 'section[aria-labelledby="settings-h"]'];
+
+    sections.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+
+      const fields = () =>
+        Array.from(el.querySelectorAll(".step-input, .formfield"))
+          .filter(f => !f.disabled && f.type !== "hidden" && f.offsetParent !== null);
+
+      el.addEventListener("keydown", e => {
+        if (e.key !== "Enter") return;
+        const list = fields();
+        const i = list.indexOf(e.target);
+        if (i === -1) return;           // only intercept Enter for our fields
+        e.preventDefault();
+        const dir = e.shiftKey ? -1 : 1;
+        const next = list[i + dir];
+        if (next) { next.focus(); next.select?.(); }
+      });
+
+      el.addEventListener("focusin", e => {
+        if (!(e.target.matches(".step-input") || e.target.matches(".formfield"))) return;
+        e.target.select?.();
+        el.querySelectorAll(".active").forEach(a => a.classList.remove("active"));
+        const row = e.target.closest(".row, label.full, .input-row");
+        row?.classList.add("active");
+      });
+
+      el.addEventListener("mouseup", e => {
+        if (e.target.matches(".step-input, .formfield")) e.preventDefault();
+      }, true);
+    });
+  });
+
+  // iPhone UX fix pack: keypad + Enter-to-next + focus highlight
+  document.addEventListener('DOMContentLoaded', () => {
+    const targets = ['#ingForm', 'section[aria-labelledby="settings-h"]'];
+    const isField = el => el && el.matches('.step-input, .formfield');
+
+    const setKeypad = el => {
+      // Keep type="text" for selection; force keypad via inputmode/pattern
+      const im = (el.getAttribute('inputmode') || '').toLowerCase();
+      if (im === 'numeric') {
+        el.type = 'text';
+        el.setAttribute('inputmode', 'numeric');
+        el.setAttribute('pattern', '[0-9]*'); // iOS hint for number pad
+      } else if (im === 'decimal') {
+        el.type = 'text';
+        el.setAttribute('inputmode', 'decimal');
+        // Light decimal hint; some iOS builds still show plain keypad without this:
+        el.setAttribute('inputmode', 'decimal');
+      }
+      el.setAttribute('enterkeyhint', 'next');
+      el.setAttribute('autocomplete', el.getAttribute('autocomplete') || 'off');
+    };
+
+    const activate = (root, el) => {
+      if (!el) return;
+      el.focus({ preventScroll: false });
+      el.select?.();
+      root.querySelectorAll('.active').forEach(a => a.classList.remove('active'));
+      el.closest('.row, label.full, .input-row')?.classList.add('active');
+    };
+
+    const bind = root => {
+      if (!root) return;
+
+      const list = () =>
+        Array.from(root.querySelectorAll('.step-input, .formfield'))
+          .filter(f => !f.disabled && f.type !== 'hidden' && f.offsetParent !== null);
+
+      // Ensure keypad hints are set
+      list().forEach(setKeypad);
+
+      // Advance on Enter (support iOS variants)
+      const maybeEnter = e => {
+        const t = e.target;
+        if (!isField(t)) return;
+        const key = e.key || e.keyIdentifier || '';
+        const isEnter = key === 'Enter' || key === 'U+000A' || e.inputType === 'insertLineBreak';
+        if (!isEnter) return;
+        // In textarea, require Cmd/Ctrl+Enter to advance (plain Enter = newline)
+        if (t.tagName === 'TEXTAREA' && !(e.ctrlKey || e.metaKey)) return;
+        e.preventDefault();
+        const l = list();
+        const i = l.indexOf(t);
+        const n = l[i + (e.shiftKey ? -1 : 1)];
+        activate(root, n);
+      };
+
+      root.addEventListener('keydown', maybeEnter);   // normal case
+      root.addEventListener('keyup', maybeEnter);     // some iOS builds fire here
+      root.addEventListener('beforeinput', maybeEnter); // iOS "insertLineBreak"
+
+      root.addEventListener('focusin', e => {
+        if (isField(e.target)) activate(root, e.target);
+      });
+
+      // Keep selection when tapping inside a focused field (mobile)
+      root.addEventListener('mouseup', e => {
+        if (isField(e.target)) e.preventDefault();
+      }, true);
+    };
+
+    targets.forEach(sel => bind(document.querySelector(sel)));
+  });
+
+  </script>
 </body>
 </html>
